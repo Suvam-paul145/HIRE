@@ -8,10 +8,25 @@ body:
       value: |
         ## 🕷️ New Job Site Scraper Request
         
-        Help us expand HireAI to more job platforms! 
+        Help us expand HIRE to more job platforms! 
         
         **Popular requests:**
         - Indeed, Glassdoor, Naukri, AngelList, RemoteOK, WeWorkRemotely, etc.
+        
+        ---
+        
+        ### 🎓 Apertre 3.0 Participants
+        
+        **If you are an Apertre 3.0 participant, please check the box below!**
+        This helps us track contributions from the program.
+
+  - type: checkboxes
+    id: apertre-participant
+    attributes:
+      label: 🌟 Apertre 3.0 Participant
+      description: Check this if you are participating in Apertre 3.0
+      options:
+        - label: I am an **Apertre 3.0** participant
 
   - type: input
     id: platform-name

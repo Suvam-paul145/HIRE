@@ -1,5 +1,5 @@
 name: ✨ Feature Request
-description: Suggest a new feature for HireAI
+description: Suggest a new feature for HIRE
 title: "[FEAT] "
 labels: ["enhancement"]
 body:
@@ -10,11 +10,26 @@ body:
         
         Thanks for suggesting a feature! We love hearing new ideas.
         
-        **Great feature ideas for HireAI:**
+        **Great feature ideas for HIRE:**
         - New job site scrapers (Indeed, Glassdoor, Naukri, etc.)
         - UI/UX improvements
         - Automation enhancements
         - New integrations
+        
+        ---
+        
+        ### 🎓 Apertre 3.0 Participants
+        
+        **If you are an Apertre 3.0 participant, please check the box below!**
+        This helps us track contributions from the program.
+
+  - type: checkboxes
+    id: apertre-participant
+    attributes:
+      label: 🌟 Apertre 3.0 Participant
+      description: Check this if you are participating in Apertre 3.0
+      options:
+        - label: I am an **Apertre 3.0** participant
 
   - type: textarea
     id: feature-description
@@ -60,7 +75,7 @@ body:
     id: feature-area
     attributes:
       label: 📂 Feature Area
-      description: Which part of HireAI does this affect?
+      description: Which part of HIRE does this affect?
       options:
         - "🖥️ Frontend (UI/UX)"
         - "⚙️ Backend (API/Services)"

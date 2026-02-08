@@ -1,299 +1,369 @@
-# Contributing to HireAI
+# 🤝 Contributing to HIRE
 
-First off, thank you for considering contributing to HireAI! 🎉
+<div align="center">
 
-This document provides guidelines and steps for contributing. Following these guidelines helps maintain code quality and makes the review process smoother.
+**Thank you for your interest in contributing to HIRE!** 🎉
 
-## Table of Contents
+We welcome contributions from everyone, whether you're a first-time contributor or an experienced developer.
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
-- [How to Contribute](#how-to-contribute)
-- [Pull Request Process](#pull-request-process)
-- [Coding Standards](#coding-standards)
-- [Testing Guidelines](#testing-guidelines)
-- [Community](#community)
+</div>
 
 ---
 
-## Code of Conduct
+## 📖 Table of Contents
+
+- [Code of Conduct](#-code-of-conduct)
+- [Apertre 3.0 Contributors](#-apertre-30-contributors)
+- [Getting Started](#-getting-started)
+- [Development Setup](#-development-setup)
+- [How to Contribute](#-how-to-contribute)
+- [Creating Issues](#-creating-issues)
+- [Pull Request Process](#-pull-request-process)
+- [Coding Standards](#-coding-standards)
+- [Scraper Contribution Guide](#-scraper-contribution-guide)
+- [Testing Guidelines](#-testing-guidelines)
+- [Getting Help](#-getting-help)
+
+---
+
+## 📜 Code of Conduct
 
 ### Our Pledge
 
-We are committed to providing a friendly, safe, and welcoming environment for all contributors. We expect everyone to:
+We are committed to providing a **friendly, safe, and welcoming environment** for all contributors.
 
-- **Be respectful** of differing viewpoints and experiences
-- **Be constructive** in feedback and criticism
-- **Focus on what's best** for the community and project
-- **Show empathy** towards other community members
-
-### Unacceptable Behavior
-
-- Harassment, discrimination, or offensive comments
-- Trolling or insulting comments
-- Personal or political attacks
-- Publishing others' private information
-
-Report issues to: [maintainer email] or open a confidential issue.
+| ✅ Do | ❌ Don't |
+|-------|---------|
+| Be respectful and inclusive | Harass or discriminate |
+| Be constructive in feedback | Troll or make personal attacks |
+| Focus on what's best for the project | Publish others' private info |
+| Show empathy towards others | Use inappropriate language |
 
 ---
 
-## Getting Started
+## 🌟 Apertre 3.0 Contributors
+
+### Welcome, Mentees! 🎉
+
+If you're participating in **Apertre 3.0**, this section is specifically for you!
+
+### ⚠️ IMPORTANT: Identifying Yourself
+
+> **When creating ANY issue (bug report, feature request, or contribution request), you MUST mention `Apertre 3.0` in your issue if you are a participant!**
+
+This helps us:
+- ✅ Track your contributions for the program
+- ✅ Prioritize mentee issues
+- ✅ Provide better guidance and support
+- ✅ Ensure you receive proper credit
+
+### How to Mention Apertre 3.0
+
+#### Option 1: Use the Apertre 3.0 Template (Recommended)
+
+When requesting to work on an existing issue, use our dedicated template:
+
+👉 [**Create Apertre 3.0 Contribution Request**](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=apertre_contributor.yml)
+
+#### Option 2: Add to Any Issue
+
+If using bug report or feature request templates, add this at the **top** of your description:
+
+```markdown
+---
+**🎓 Program:** Apertre 3.0 Participant
+**📅 Cohort:** Winter 2026
+---
+```
+
+#### Option 3: Add the Label
+
+Request the `apertre3.0` label to be added to your issue in the comments.
+
+### First Steps for Apertre 3.0 Participants
+
+1. **⭐ Star this repository** - Show your support!
+2. **🍴 Fork the repository** - Create your own copy
+3. **📖 Read this entire guide** - Understand the contribution process
+4. **🔧 Set up locally** - Follow the [Development Setup](#-development-setup)
+5. **🔍 Find an issue** - Look for `good first issue` or `apertre3.0` labels
+6. **💬 Comment on the issue** - Express your interest and mention Apertre 3.0
+7. **⏳ Wait for assignment** - A maintainer will assign you
+8. **💻 Start coding!** - Create your feature branch and work on the issue
+
+### Good First Issues for Apertre 3.0
+
+| Label | Difficulty | Description |
+|-------|-----------|-------------|
+| `good first issue` | 🟢 Easy | Perfect for first-time contributors |
+| `documentation` | 🟢 Easy | Improve docs, fix typos |
+| `apertre3.0` | 🟢-🟡 Easy-Medium | Issues for program participants |
+| `help wanted` | 🟡 Medium | We need community help |
+| `scraper` | 🟡 Medium | Add new job platform support |
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
 Before contributing, ensure you have:
 
-- **Node.js 18+** installed
-- **Docker Desktop** for running PostgreSQL
-- **Git** configured with your GitHub account
-- A **Gemini API key** (free at https://aistudio.google.com/apikey)
+| Requirement | Version | Download |
+|-------------|---------|----------|
+| Node.js | 18+ | [nodejs.org](https://nodejs.org/) |
+| Docker Desktop | Latest | [docker.com](https://www.docker.com/products/docker-desktop/) |
+| Git | Latest | [git-scm.com](https://git-scm.com/) |
+| Gemini API Key | - | [aistudio.google.com](https://aistudio.google.com/apikey) |
 
 ### Understanding the Project
 
-1. Read the [README.md](./README.md) for project overview
-2. Read the [ARCHITECTURE.md](./ARCHITECTURE.md) for technical deep-dive
-3. Browse open [Issues](https://github.com/JAYATIAHUJA/HIRE/issues) to understand current priorities
+1. 📖 Read the [README.md](./README.md) for project overview
+2. 🏗️ Read the [ARCHITECTURE.md](./ARCHITECTURE.md) for technical deep-dive
+3. 🔍 Browse [open issues](https://github.com/JAYATIAHUJA/HIRE/issues) to understand priorities
 
 ---
 
-## Development Setup
+## 💻 Development Setup
 
-### 1. Fork and Clone
+### Step 1: Fork and Clone
 
 ```bash
-# Fork on GitHub, then clone your fork
+# 1. Fork on GitHub (click the Fork button)
+
+# 2. Clone your fork
 git clone https://github.com/YOUR_USERNAME/HIRE.git
 cd HIRE
 
-# Add upstream remote
+# 3. Add upstream remote
 git remote add upstream https://github.com/JAYATIAHUJA/HIRE.git
+
+# 4. Verify remotes
+git remote -v
+# origin    https://github.com/YOUR_USERNAME/HIRE.git (fetch)
+# origin    https://github.com/YOUR_USERNAME/HIRE.git (push)
+# upstream  https://github.com/JAYATIAHUJA/HIRE.git (fetch)
+# upstream  https://github.com/JAYATIAHUJA/HIRE.git (push)
 ```
 
-### 2. Install Dependencies
+### Step 2: Install Dependencies
 
 ```bash
-# Install all dependencies
+# Install root dependencies
+npm install
+
+# Install backend dependencies
 cd backend && npm install
+
+# Install frontend dependencies
 cd ../frontend && npm install
 ```
 
-### 3. Configure Environment
+### Step 3: Configure Environment
 
 ```bash
-# Copy example env
+# Copy example environment file
 cp env.example backend/.env
 
 # Edit backend/.env with your values:
 # - GEMINI_API_KEY (required)
-# - Database URL (default works with Docker)
+# - INTERNSHALA_EMAIL (optional, for scraper testing)
+# - INTERNSHALA_PASSWORD (optional, for scraper testing)
 ```
 
-### 4. Start Development Environment
+### Step 4: Start Development Environment
 
 ```bash
 # Terminal 1: Start database
 docker-compose up -d
 
-# Terminal 2: Start backend
+# Terminal 2: Start backend (with hot-reload)
 cd backend && npm run start:dev
 
 # Terminal 3: Start frontend (optional)
 cd frontend && npm run dev
 ```
 
-### 5. Verify Setup
+### Step 5: Verify Setup
 
 ```bash
-# Test API
+# Test API is running
 curl http://localhost:3000/api/scrapers/stats
 
-# Expected: {"message":"Job statistics","total":0,...}
+# Expected response:
+# {"message":"Job statistics","total":0,...}
+```
+
+✅ **You're ready to contribute!**
+
+---
+
+## 📝 Creating Issues
+
+### ⚠️ Important for Apertre 3.0 Participants
+
+> **Always mention `Apertre 3.0` when creating issues if you're a program participant!**
+
+### Issue Templates
+
+We have several issue templates:
+
+| Template | Use Case | Link |
+|----------|----------|------|
+| 🐛 Bug Report | Report a bug | [Create](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=bug_report.yml) |
+| ✨ Feature Request | Suggest new feature | [Create](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=feature_request.yml) |
+| 🕷️ New Scraper | Propose new job platform | [Create](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=new_scraper.yml) |
+| 🚀 Apertre 3.0 Request | Request to work on issue | [Create](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=apertre_contributor.yml) |
+
+### Before Creating an Issue
+
+1. ✅ Search existing issues to avoid duplicates
+2. ✅ Test on the latest `main` branch
+3. ✅ Gather all necessary information
+
+### Issue Title Format
+
+```
+[TYPE] Brief description
+
+Examples:
+[BUG] Login fails on Internshala scraper
+[FEATURE] Add Indeed job scraper
+[DOCS] Improve API documentation
+[APERTRE] Request: Add LinkedIn scraper
 ```
 
 ---
 
-## How to Contribute
+## 🔄 Pull Request Process
 
-### 🐛 Reporting Bugs
-
-Before reporting:
-1. Search existing issues to avoid duplicates
-2. Test on latest `main` branch
-
-When reporting:
-```markdown
-### Bug Description
-[Clear description of the bug]
-
-### Steps to Reproduce
-1. Step one
-2. Step two
-3. ...
-
-### Expected Behavior
-[What you expected]
-
-### Actual Behavior
-[What actually happened]
-
-### Environment
-- OS: [e.g., Windows 11]
-- Node.js: [e.g., 18.17.0]
-- Browser: [if frontend-related]
-
-### Screenshots/Logs
-[Attach if applicable]
-```
-
-### 💡 Suggesting Features
-
-Open a [Feature Request](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=feature_request.md):
-
-```markdown
-### Feature Description
-[What feature do you want?]
-
-### Problem It Solves
-[Why is this needed?]
-
-### Proposed Solution
-[How should it work?]
-
-### Alternatives Considered
-[Other approaches you thought of]
-```
-
-### 📝 Improving Documentation
-
-Documentation improvements are always welcome:
-- Fix typos
-- Clarify confusing sections
-- Add examples
-- Translate to other languages
-
-### 🔧 Submitting Code
-
-#### Good First Issues
-
-Look for issues labeled:
-- `good first issue` - Simple, well-defined tasks
-- `help wanted` - Community help needed
-- `documentation` - Docs improvements
-
-#### Types of Contributions
-
-| Type | Description | Label |
-|------|-------------|-------|
-| Bug Fix | Fix a reported bug | `bug` |
-| Feature | New functionality | `enhancement` |
-| Refactor | Code improvement without behavior change | `refactor` |
-| Test | Add or improve tests | `testing` |
-| Docs | Documentation updates | `documentation` |
-| Scraper | New job platform support | `scraper` |
-
----
-
-## Pull Request Process
-
-### 1. Create a Branch
+### Step 1: Sync Your Fork
 
 ```bash
-# Update your fork
+# Fetch latest changes
 git fetch upstream
+
+# Switch to main branch
 git checkout main
+
+# Merge upstream changes
 git merge upstream/main
 
-# Create feature branch
-git checkout -b feature/your-feature-name
-# or
-git checkout -b fix/bug-description
+# Push to your fork
+git push origin main
 ```
 
-### Branch Naming
-
-| Type | Format | Example |
-|------|--------|---------|
-| Feature | `feature/description` | `feature/indeed-scraper` |
-| Bug Fix | `fix/description` | `fix/login-timeout` |
-| Docs | `docs/description` | `docs/api-examples` |
-| Refactor | `refactor/description` | `refactor/llm-service` |
-
-### 2. Make Changes
-
-- Write clean, readable code
-- Follow [Coding Standards](#coding-standards)
-- Add tests for new functionality
-- Update documentation if needed
-
-### 3. Commit Changes
-
-Use [Conventional Commits](https://www.conventionalcommits.org/):
+### Step 2: Create a Feature Branch
 
 ```bash
-# Format: type(scope): description
+# Branch naming convention
+git checkout -b <type>/<description>
+
+# Examples:
+git checkout -b feature/indeed-scraper
+git checkout -b fix/login-timeout
+git checkout -b docs/api-examples
+```
+
+| Type | Use For |
+|------|---------|
+| `feature/` | New features |
+| `fix/` | Bug fixes |
+| `docs/` | Documentation |
+| `refactor/` | Code refactoring |
+| `test/` | Adding tests |
+
+### Step 3: Make Changes
+
+- ✅ Write clean, readable code
+- ✅ Follow [Coding Standards](#-coding-standards)
+- ✅ Add tests for new functionality
+- ✅ Update documentation if needed
+
+### Step 4: Commit Changes
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```bash
+# Format: <type>(<scope>): <description>
 
 # Examples:
 git commit -m "feat(scrapers): add Indeed job scraper"
 git commit -m "fix(automation): handle login timeout"
 git commit -m "docs(readme): add API examples"
 git commit -m "test(matching): add unit tests for scoring"
-git commit -m "refactor(llm): extract provider interface"
 ```
 
-### 4. Push and Create PR
+| Type | Description |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation |
+| `test` | Adding tests |
+| `refactor` | Code refactoring |
+| `style` | Formatting, no code change |
+| `chore` | Maintenance tasks |
+
+### Step 5: Push and Create PR
 
 ```bash
 git push origin feature/your-feature-name
 ```
 
-Then open a Pull Request on GitHub with:
+Then on GitHub, click **"Compare & pull request"**
+
+### Pull Request Template
 
 ```markdown
-## Description
+## 📝 Description
 [What does this PR do?]
 
-## Related Issue
+## 🔗 Related Issue
 Fixes #123
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Documentation update
-- [ ] Refactor
-- [ ] Other: ___
+## 🎓 Apertre 3.0
+<!-- If you're an Apertre 3.0 participant, uncomment the next line -->
+<!-- **Program:** Apertre 3.0 Participant -->
 
-## Testing
+## ✅ Type of Change
+- [ ] 🐛 Bug fix
+- [ ] ✨ New feature
+- [ ] 📝 Documentation
+- [ ] ♻️ Refactor
+- [ ] 🧪 Test
+
+## 🧪 Testing
 - [ ] I have tested this locally
-- [ ] I have added tests for new functionality
 - [ ] All existing tests pass
+- [ ] I have added tests for new functionality
 
-## Screenshots
+## 📸 Screenshots
 [If applicable]
 
-## Checklist
+## ✔️ Checklist
 - [ ] My code follows the project style
 - [ ] I have updated documentation
-- [ ] I have added appropriate comments
+- [ ] I have added necessary comments
 ```
 
-### 5. Review Process
+### Step 6: Review Process
 
-1. **Automated Checks**: CI runs tests and linting
-2. **Maintainer Review**: Code review within 48 hours
-3. **Feedback**: Address any requested changes
-4. **Merge**: Squash and merge after approval
+1. **🤖 Automated Checks** - CI runs tests and linting
+2. **👀 Maintainer Review** - Code review within 48-72 hours
+3. **💬 Feedback** - Address any requested changes
+4. **✅ Approval** - Maintainer approves
+5. **🎉 Merge** - Squash and merge!
 
 ---
 
-## Coding Standards
+## 📏 Coding Standards
 
-### TypeScript
+### TypeScript Best Practices
 
 ```typescript
 // ✅ Good: Clear types, descriptive names
 interface UserProfile {
+  id: string;
   name: string;
   email: string;
   skills: string[];
@@ -313,46 +383,6 @@ function create(u: any, j: any): any {
 }
 ```
 
-### File Organization
-
-```typescript
-// 1. Imports (grouped: external, internal)
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-
-import { User } from './entities/user.entity';
-import { LlmService } from '../services/llm.service';
-
-// 2. Interface/Type definitions
-export interface CreateUserDto {
-  name: string;
-  email: string;
-}
-
-// 3. Class definition
-@Injectable()
-export class UsersService {
-  // 4. Class members (private first)
-  private readonly logger = new Logger(UsersService.name);
-
-  // 5. Constructor
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-  ) {}
-
-  // 6. Public methods
-  async createUser(dto: CreateUserDto): Promise<User> {
-    // Implementation
-  }
-
-  // 7. Private methods
-  private validateEmail(email: string): boolean {
-    // Implementation
-  }
-}
-```
-
 ### Naming Conventions
 
 | Type | Convention | Example |
@@ -362,13 +392,46 @@ export class UsersService {
 | Methods | camelCase | `getUserProfile` |
 | Variables | camelCase | `userProfile` |
 | Constants | UPPER_SNAKE | `MAX_RETRIES` |
-| Interfaces | PascalCase (I- prefix optional) | `UserProfile` |
+| Interfaces | PascalCase | `UserProfile` |
+
+### File Organization
+
+```typescript
+// 1. External imports
+import { Injectable, Logger } from '@nestjs/common';
+
+// 2. Internal imports
+import { User } from './entities/user.entity';
+import { LlmService } from '../services/llm.service';
+
+// 3. Interfaces/Types
+export interface CreateUserDto {
+  name: string;
+  email: string;
+}
+
+// 4. Class definition
+@Injectable()
+export class UsersService {
+  // Private members first
+  private readonly logger = new Logger(UsersService.name);
+
+  // Constructor
+  constructor(/*...*/) {}
+
+  // Public methods
+  async createUser(dto: CreateUserDto): Promise<User> {}
+
+  // Private methods
+  private validateEmail(email: string): boolean {}
+}
+```
 
 ### Comments
 
 ```typescript
 // ✅ Good: Explain WHY, not WHAT
-// Retry with exponential backoff to handle rate limits
+// Retry with exponential backoff to handle API rate limits
 await this.withRetry(() => this.llm.generate(prompt), 3, 2000);
 
 // ❌ Bad: States the obvious
@@ -378,7 +441,84 @@ for (const user of users) {
 
 ---
 
-## Testing Guidelines
+## 🕷️ Scraper Contribution Guide
+
+We welcome new job platform scrapers! Here's how to contribute one:
+
+### Scraper Interface
+
+All scrapers should implement this interface:
+
+```typescript
+interface IJobScraper {
+  platform: string;
+  
+  // Login to platform (if required)
+  login(credentials: Credentials): Promise<void>;
+  
+  // Scrape job listings based on query
+  scrapeJobs(query: ScraperQuery): Promise<JobListing[]>;
+  
+  // Get full job details
+  getJobDetails(jobId: string): Promise<JobDetails>;
+  
+  // Cleanup resources
+  cleanup(): Promise<void>;
+}
+```
+
+### Creating a New Scraper
+
+1. **Create file**: `backend/src/scrapers/<platform>.scraper.ts`
+2. **Implement interface**: Follow `InternshalaScraperV2` as reference
+3. **Add error handling**: Retry logic, timeout handling
+4. **Add tests**: Unit tests for parsing logic
+5. **Update module**: Register in `scrapers.module.ts`
+
+### Example Scraper Structure
+
+```typescript
+// backend/src/scrapers/indeed.scraper.ts
+
+@Injectable()
+export class IndeedScraper implements IJobScraper {
+  platform = 'indeed';
+  private browser: Browser;
+  private page: Page;
+
+  async login(credentials: Credentials): Promise<void> {
+    // Indeed might not require login
+  }
+
+  async scrapeJobs(query: ScraperQuery): Promise<JobListing[]> {
+    // Navigate to search page
+    // Extract job cards
+    // Return normalized job listings
+  }
+
+  async getJobDetails(jobId: string): Promise<JobDetails> {
+    // Navigate to job page
+    // Extract full details
+    // Return normalized job details
+  }
+
+  async cleanup(): Promise<void> {
+    await this.browser?.close();
+  }
+}
+```
+
+### Platforms We Want
+
+Priority order:
+
+1. 🔴 **High Priority**: LinkedIn, Indeed, Glassdoor
+2. 🟡 **Medium Priority**: Naukri, AngelList/Wellfound
+3. 🟢 **Nice to Have**: RemoteOK, WeWorkRemotely, Hacker News Jobs
+
+---
+
+## 🧪 Testing Guidelines
 
 ### Running Tests
 
@@ -391,29 +531,19 @@ npm test
 # Run with coverage
 npm run test:cov
 
-# Run specific test file
+# Run specific test
 npm test -- --testPathPattern=users.service
 ```
 
 ### Writing Tests
 
 ```typescript
-// users.service.spec.ts
-import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-
 describe('UsersService', () => {
   let service: UsersService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UsersService,
-        {
-          provide: getRepositoryToken(User),
-          useValue: mockRepository,
-        },
-      ],
+    const module = await Test.createTestingModule({
+      providers: [UsersService, /* mocks */],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
@@ -421,7 +551,7 @@ describe('UsersService', () => {
 
   describe('createUser', () => {
     it('should create a new user', async () => {
-      const dto = { name: 'Test', email: 'test@example.com', resume: '...' };
+      const dto = { name: 'Test', email: 'test@example.com' };
       const result = await service.createUser(dto);
       
       expect(result).toBeDefined();
@@ -435,30 +565,32 @@ describe('UsersService', () => {
 });
 ```
 
-### Test Coverage Requirements
+### Coverage Requirements
 
-| Type | Minimum Coverage |
-|------|------------------|
+| Component | Minimum |
+|-----------|---------|
 | Services | 80% |
 | Controllers | 70% |
 | Utilities | 90% |
 
 ---
 
-## Community
+## 💬 Getting Help
 
-### Getting Help
+### Resources
 
-- **GitHub Discussions**: Ask questions, share ideas
-- **Issues**: Report bugs, request features
-- **Discord** (coming soon): Real-time chat
+| Resource | Link |
+|----------|------|
+| 📖 README | [README.md](./README.md) |
+| 🏗️ Architecture | [ARCHITECTURE.md](./ARCHITECTURE.md) |
+| 📚 Documentation | [DOCUMENTATION.md](./DOCUMENTATION.md) |
+| 🐛 Issues | [GitHub Issues](https://github.com/JAYATIAHUJA/HIRE/issues) |
 
-### Recognition
+### Contact
 
-Contributors are recognized in:
-- README.md Contributors section
-- Release notes
-- Annual contributor spotlight
+- **GitHub Issues**: Best for bugs and feature requests
+- **GitHub Discussions**: Best for questions and ideas
+- **Discord**: Coming soon!
 
 ### Maintainers
 
@@ -468,10 +600,16 @@ Contributors are recognized in:
 
 ---
 
-## License
+## 📄 License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the **MIT License**.
 
 ---
 
-**Thank you for contributing to HireAI!** 🚀
+<div align="center">
+
+**Thank you for contributing to HIRE!** 🚀
+
+Your contributions make this project better for everyone.
+
+</div>

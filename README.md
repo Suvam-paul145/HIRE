@@ -1,318 +1,272 @@
 # 🚀 HIRE - Intelligent Job Application Automation Engine
 
-An AI-powered job application automation platform that scrapes jobs, matches them to your profile, and automates the application process using Playwright and LLM-powered form filling.
+<div align="center">
 
-## 🎯 Project Overview
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Node](https://img.shields.io/badge/node-18%2B-green.svg)
+![TypeScript](https://img.shields.io/badge/typescript-5.0-blue.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+
+**An AI-powered job application automation platform that scrapes jobs, matches them to your profile, and automates the application process.**
+
+[Getting Started](#-quick-start) · [Contributing](#-contributing) · [Documentation](./DOCUMENTATION.md) · [Architecture](./ARCHITECTURE.md)
+
+</div>
+
+---
+
+## 📖 Table of Contents
+
+- [What is HIRE?](#-what-is-hire)
+- [Why HIRE?](#-why-hire)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Quick Start](#-quick-start)
+- [API Reference](#-api-reference)
+- [Contributing](#-contributing)
+- [Apertre 3.0 Contributors](#-apertre-30-contributors)
+- [License](#-license)
+
+---
+
+## 💡 What is HIRE?
+
+HIRE is an **intelligent job application automation engine** that streamlines the job hunting process using AI and browser automation. Instead of spending hours applying to jobs manually, HIRE does the heavy lifting for you!
+
+### How It Works
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  1. SCRAPE      │ ──▶ │  2. MATCH       │ ──▶ │  3. TAILOR      │ ──▶ │  4. APPLY       │
+│  Jobs from      │     │  Jobs to your   │     │  Resume for     │     │  Automatically  │
+│  platforms      │     │  profile        │     │  each job       │     │  using AI       │
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+---
+
+## 🎯 Why HIRE?
 
 ### The Problem
-Applying to jobs is time-consuming and repetitive. Job seekers spend hours:
-- Searching for relevant jobs across multiple platforms
-- Tailoring resumes for each application
-- Filling out similar forms repeatedly
-- Writing cover letters for each position
+
+Applying to jobs is **time-consuming and repetitive**. Job seekers spend hours:
+
+| Pain Point | Time Wasted |
+|------------|-------------|
+| 🔍 Searching for relevant jobs | 2-3 hours/day |
+| 📝 Tailoring resumes | 30 mins/application |
+| ✍️ Filling forms repeatedly | 15-20 mins/application |
+| 💌 Writing cover letters | 20-30 mins/application |
 
 ### The Solution
-HIRE automates this entire workflow:
-1. **Scrapes jobs** from platforms like Internshala based on your skills
-2. **Ranks jobs** by relevance using AI-powered matching (vector embeddings)
-3. **Tailors resumes** automatically for each job using LLM
-4. **Fills applications** using Playwright with AI-generated answers
-5. **Handles complexity** - popups, multi-page forms, file uploads
 
-## 🏗️ Architecture
+HIRE automates the entire workflow:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Frontend (React)                        │
-│  - Job feed with swipe UI                                    │
-│  - Application status dashboard                              │
-└────────────────────────┬────────────────────────────────────┘
-                         │ REST API
-┌────────────────────────▼────────────────────────────────────┐
-│              Backend API (NestJS + TypeScript)               │
-│                                                              │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │ Core Services                                        │    │
-│  │                                                      │    │
-│  │  📰 ScrapersService                                  │    │
-│  │     - InternshalaScraperV2 (Playwright-based)        │    │
-│  │     - LinkedIn scraper                               │    │
-│  │     - Skill-based category scraping                  │    │
-│  │                                                      │    │
-│  │  🎯 MatchingService                                  │    │
-│  │     - Vector similarity (pgvector)                   │    │
-│  │     - Keyword matching                               │    │
-│  │     - Composite scoring                              │    │
-│  │                                                      │    │
-│  │  📝 ApplicationsService                              │    │
-│  │     - State machine workflow                         │    │
-│  │     - Background processing                          │    │
-│  │     - Retry logic                                    │    │
-│  │                                                      │    │
-│  │  🤖 LlmService (Gemini/OpenAI)                       │    │
-│  │     - Resume tailoring                               │    │
-│  │     - Cover letter generation                        │    │
-│  │     - Form answer generation                         │    │
-│  │     - Embedding generation                           │    │
-│  │                                                      │    │
-│  │  🎭 SimpleAutomationService (Playwright)             │    │
-│  │     - Smart form detection                           │    │
-│  │     - AI-powered form filling                        │    │
-│  │     - Popup/dialog handling                          │    │
-│  │     - File uploads                                   │    │
-│  │                                                      │    │
-│  │  📄 ResumeParserService                              │    │
-│  │     - PDF parsing                                    │    │
-│  │     - Word document parsing                          │    │
-│  │     - Skill extraction                               │    │
-│  │                                                      │    │
-│  │  📋 AuditLogService                                  │    │
-│  │     - Complete event tracking                        │    │
-│  │     - Application history                            │    │
-│  └─────────────────────────────────────────────────────┘    │
-└─────────────────────────┬───────────────────────────────────┘
-                          │
-        ┌─────────────────┼─────────────────┐
-        │                 │                 │
-┌───────▼───────┐ ┌───────▼───────┐ ┌───────▼───────┐
-│  PostgreSQL   │ │   Playwright  │ │  LLM Provider │
-│  + pgvector   │ │   Browser     │ │ (Gemini/GPT)  │
-└───────────────┘ └───────────────┘ └───────────────┘
-```
+| Feature | What HIRE Does |
+|---------|----------------|
+| 🕷️ **Smart Scraping** | Scrapes jobs from platforms based on your skills |
+| 🎯 **AI Matching** | Ranks jobs by relevance using vector embeddings |
+| 📄 **Resume Tailoring** | Customizes your resume for each job using LLM |
+| 🤖 **Auto-Apply** | Fills applications with AI-generated answers |
+| 🔄 **Handles Complexity** | Manages popups, multi-page forms, file uploads |
+
+---
+
+## ✨ Features
+
+### Core Features
+
+- **🕷️ Multi-Platform Job Scraping** - Currently supports Internshala, with more platforms coming!
+- **🎯 AI-Powered Job Matching** - Uses vector similarity (pgvector) to find relevant jobs
+- **📄 Smart Resume Tailoring** - LLM-powered resume customization for each application
+- **🤖 Automated Form Filling** - Playwright-based browser automation with AI-generated responses
+- **📊 Application Dashboard** - Track all your applications in one place
+
+### Automation Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| Smart Form Detection | Detects all form fields and their labels |
+| Multi-Page Forms | Navigates through form pages automatically |
+| Popup Handling | Auto-dismisses alerts, modals, and cookie popups |
+| File Uploads | Uploads resume to file inputs (PDF, DOCX, DOC) |
+
+---
 
 ## 🔧 Tech Stack
 
-| Component | Technology |
-|-----------|------------|
-| Backend | NestJS + TypeScript |
-| Database | PostgreSQL + pgvector |
-| Browser Automation | Playwright |
-| AI/LLM | Google Gemini / OpenAI GPT |
-| Job Scraping | Playwright + Custom parsers |
-| Resume Parsing | pdf-parse, mammoth |
-| Frontend | React + Vite |
-| Containerization | Docker |
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Backend** | NestJS + TypeScript | REST API, business logic |
+| **Database** | PostgreSQL + pgvector | Data storage, vector similarity |
+| **Automation** | Playwright | Browser automation |
+| **AI/LLM** | Google Gemini / OpenAI | Resume tailoring, form answers |
+| **Frontend** | React + Vite | User interface |
+| **Containerization** | Docker | Easy deployment |
+
+---
 
 ## 📁 Project Structure
 
 ```
-hire/
-├── backend/
-│   ├── src/
-│   │   ├── applications/      # Application workflow management
-│   │   ├── jobs/              # Job listing management
-│   │   ├── scrapers/          # Job scraping services
-│   │   ├── services/          # Core services (LLM, automation, etc.)
-│   │   ├── users/             # User management & resume handling
-│   │   ├── config/            # Database & app configuration
-│   │   ├── app.module.ts      # Main NestJS module
-│   │   └── main.ts            # Application entry point
-│   ├── resumes/               # Tailored resume storage
-│   ├── screenshots/           # Automation screenshots
-│   └── uploads/               # User uploaded files
-├── frontend/                  # React frontend (Vite)
-├── docker-compose.yml         # PostgreSQL container
-└── README.md                  # This file
+HIRE/
+├── 📂 backend/                 # NestJS Backend
+│   ├── 📂 src/
+│   │   ├── 📂 applications/    # Application workflow management
+│   │   ├── 📂 jobs/            # Job listing management
+│   │   ├── 📂 scrapers/        # ⭐ Job scraping services
+│   │   ├── 📂 services/        # Core services (LLM, automation)
+│   │   ├── 📂 users/           # User management & resume handling
+│   │   └── 📂 config/          # Database & app configuration
+│   ├── 📂 resumes/             # Tailored resume storage
+│   ├── 📂 screenshots/         # Automation screenshots
+│   └── 📂 uploads/             # User uploaded files
+│
+├── 📂 frontend/                # React Frontend (Vite)
+│   ├── 📂 src/
+│   │   ├── 📂 components/      # Reusable UI components
+│   │   └── 📂 pages/           # Application pages
+│
+├── 📂 .github/                 # GitHub Actions & Issue Templates
+│   └── 📂 ISSUE_TEMPLATE/      # Issue templates for contributors
+│
+├── 📄 docker-compose.yml       # PostgreSQL container setup
+├── 📄 CONTRIBUTING.md          # Contribution guidelines
+├── 📄 ARCHITECTURE.md          # System architecture details
+└── 📄 README.md                # You are here! 👋
 ```
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- Docker Desktop
-- Gemini API key (or OpenAI API key)
 
-### 1. Clone and Install
+Before you begin, make sure you have:
+
+- ✅ **Node.js 18+** - [Download](https://nodejs.org/)
+- ✅ **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop/)
+- ✅ **Git** - [Download](https://git-scm.com/)
+- ✅ **Gemini API Key** - [Get Free Key](https://aistudio.google.com/apikey)
+
+### Step 1: Clone & Install
 
 ```bash
-# Install dependencies
+# Clone the repository
+git clone https://github.com/JAYATIAHUJA/HIRE.git
+cd HIRE
+
+# Install backend dependencies
 cd backend && npm install
+
+# Install frontend dependencies
 cd ../frontend && npm install
 ```
 
-### 2. Start Database
+### Step 2: Start Database
 
 ```bash
+# From project root
 docker-compose up -d
+
+# Verify database is running
+docker ps
 ```
 
-### 3. Configure Environment
+### Step 3: Configure Environment
 
-Create `backend/.env`:
+```bash
+# Copy example environment file
+cp env.example backend/.env
+```
+
+Edit `backend/.env` with your values:
+
 ```env
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/hire_db
 LLM_PROVIDER=gemini
-GEMINI_API_KEY=your_gemini_api_key
+GEMINI_API_KEY=your_gemini_api_key_here
 INTERNSHALA_EMAIL=your_internshala_email
 INTERNSHALA_PASSWORD=your_internshala_password
 ```
 
-### 4. Start Backend
+### Step 4: Start the Application
 
 ```bash
+# Terminal 1: Start Backend
 cd backend
 npm run start:dev
-```
 
-Server runs at `http://localhost:3000`
-
-### 5. Start Frontend (Optional)
-
-```bash
+# Terminal 2: Start Frontend (Optional)
 cd frontend
 npm run dev
 ```
 
-## 📡 API Endpoints
+### Step 5: Verify Setup
 
-### Users
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/users` | Create user with resume |
-| POST | `/api/users/:id/upload-resume` | Upload PDF/Word resume |
-| GET | `/api/users/:id` | Get user profile |
+```bash
+# Test the API
+curl http://localhost:3000/api/scrapers/stats
 
-### Jobs & Feed
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/feed?userId=X` | Get personalized job feed |
-| GET | `/api/scrapers/stats` | Get job statistics |
-| POST | `/api/scrapers/scrape-for-user` | Scrape jobs for user's skills |
-| POST | `/api/scrapers/clear-old` | Clear stale jobs |
-
-### Applications
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/applications` | Create job application |
-| GET | `/api/applications/:id` | Get application status |
-| POST | `/api/applications/:id/approve` | Approve & submit |
-| POST | `/api/applications/:id/retry` | Retry failed application |
-| GET | `/api/applications/:id/logs` | Get audit trail |
-
-## 🔄 Application Workflow
-
-```
-┌──────────────┐      ┌────────────────┐      ┌───────────────┐      ┌───────────┐
-│   Drafting   │ ───▶ │ NeedsApproval  │ ───▶ │   Submitted   │ ───▶ │  Success  │
-└──────────────┘      └────────────────┘      └───────────────┘      └───────────┘
-       │                      │
-       │                      │
-       ▼                      ▼
-┌──────────────┐      ┌────────────────┐
-│    Failed    │ ◀─── │    Rejected    │
-└──────────────┘      └────────────────┘
-       │
-       │ (retry up to 3x)
-       ▼
-┌──────────────┐
-│   Drafting   │
-└──────────────┘
+# Expected response:
+# {"message":"Job statistics","total":0,...}
 ```
 
-## 🤖 Automation Features
+🎉 **Congratulations!** You're all set up!
 
-### Smart Form Filling
-- Detects all form fields and their labels
-- Uses AI to generate contextual answers
-- Handles cover letters, "why should we hire you", etc.
+---
 
-### Multi-Page Form Support
-- Automatically navigates through form pages
-- Clicks "Next" / "Continue" buttons
-- Handles final "Submit" action
+## 📡 API Reference
 
-### Popup & Dialog Handling
-- Auto-dismisses alerts and modals
-- Handles confirmation dialogs
-- Closes cookie/notification popups
+### Quick Reference
 
-### Resume Upload
-- Automatically uploads resume to file inputs
-- Supports PDF, DOCX, DOC formats
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/users` | POST | Create user with resume |
+| `/api/users/:id` | GET | Get user profile |
+| `/api/users/:id/upload-resume` | POST | Upload PDF/Word resume |
+| `/api/feed?userId=X` | GET | Get personalized job feed |
+| `/api/scrapers/stats` | GET | Get job statistics |
+| `/api/scrapers/scrape-for-user` | POST | Scrape jobs for user's skills |
+| `/api/applications` | POST | Create job application |
+| `/api/applications/:id` | GET | Get application status |
+| `/api/applications/:id/approve` | POST | Approve & submit |
 
-## 🔮 Future Enhancements
+For detailed API documentation, see [DOCUMENTATION.md](./DOCUMENTATION.md).
 
-### Skyvern Integration (Dynamic AI Automation)
-For more robust automation of complex job portals, consider integrating [Skyvern](https://github.com/Skyvern-AI/skyvern):
-
-```typescript
-// Future: SkyvernClient for dynamic automation
-interface ISkyvernClient {
-  createTask(request: SkyvernTaskRequest): Promise<SkyvernTaskResponse>;
-  resumeTask(taskId: string): Promise<SkyvernSubmitResponse>;
-  getTaskStatus(taskId: string): Promise<SkyvernTaskStatusResponse>;
-}
-```
-
-Benefits:
-- AI-powered element detection (no hardcoded selectors)
-- Handles website changes automatically
-- CAPTCHA handling capabilities
-- Cloud-based browser execution
-
-### JobSpy Integration (Multi-Platform Scraping)
-For scraping from multiple job platforms, integrate [JobSpy](https://github.com/speedyapply/JobSpy):
-
-```python
-# Python microservice for multi-platform scraping
-from jobspy import scrape_jobs
-
-jobs = scrape_jobs(
-    site_name=["indeed", "linkedin", "glassdoor"],
-    search_term="software engineer",
-    location="India",
-    results_wanted=100
-)
-```
-
-## 📊 Database Schema
-
-### Users
-- UUID, fullname, email, phone
-- masterResumeText, skills (JSONB)
-- profileVector (VECTOR for similarity)
-
-### JobListings
-- UUID, platform, externalId
-- title, company, description
-- requirements (JSONB)
-- descriptionVector (VECTOR)
-
-### Applications
-- UUID, userId, jobId, status
-- tailoredResume, screenshotUrl
-- failureReason, retryCount
-- Timestamps (created, approved, submitted)
-
-## 🛡️ Security Notes
-
-- Never commit `.env` files
-- Rotate API keys regularly
-- Use environment variables for secrets
-- Credentials are only used during automation sessions
-
-## 📝 License
-
-MIT License
+---
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing`)
-5. Open Pull Request
+We love contributions! Whether you're fixing a bug, adding a feature, or improving documentation, we appreciate your help.
+
+### Quick Contribution Guide
+
+1. **Fork** the repository
+2. **Clone** your fork
+3. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+4. **Commit** your changes (`git commit -m 'feat: add amazing feature'`)
+5. **Push** to your branch (`git push origin feature/amazing-feature`)
+6. **Open** a Pull Request
+
+### Contribution Types
+
+| Type | Description | Good For |
+|------|-------------|----------|
+| 🐛 **Bug Fixes** | Fix reported issues | Everyone |
+| ✨ **Features** | Add new functionality | Intermediate+ |
+| 📝 **Documentation** | Improve docs, fix typos | Beginners |
+| 🧪 **Tests** | Add or improve tests | All levels |
+| 🕷️ **Scrapers** | Add new job platform support | Intermediate+ |
 
 ### 🕷️ Scraper Contributions
 
-We welcome contributions to expand our job scraping capabilities! You can contribute in two ways:
+We especially welcome scrapers for new job platforms! You can contribute:
 
 #### Option 1: Individual Platform Scrapers
-Implement a dedicated scraper for a specific job platform. Each platform scraper should:
-- Be placed in `backend/src/scrapers/`
-- Follow the existing scraper interface pattern (see `InternshalaScraperV2` as reference)
-- Handle login, job listing extraction, and job detail parsing
-- Include error handling and retry logic
+
+Create a dedicated scraper for a specific job platform:
 
 **Platforms we'd love scrapers for:**
 - LinkedIn Jobs
@@ -325,23 +279,124 @@ Implement a dedicated scraper for a specific job platform. Each platform scraper
 - Hacker News Jobs
 
 #### Option 2: Unified Multi-Platform Scraper
-Alternatively, you can implement a single unified scraper that aggregates jobs from multiple platforms. This could:
-- Leverage libraries like [JobSpy](https://github.com/speedyapply/JobSpy) for multi-platform scraping
-- Normalize job data from different sources into our standard format
-- Provide a configuration-based approach to enable/disable specific platforms
 
-**Example unified scraper approach:**
-```typescript
-interface UnifiedScraperConfig {
-  platforms: ('linkedin' | 'indeed' | 'glassdoor' | 'internshala')[];
-  searchTerms: string[];
-  location: string;
-  resultsPerPlatform: number;
-}
-```
+Build a single scraper that aggregates jobs from multiple platforms using libraries like [JobSpy](https://github.com/speedyapply/JobSpy).
 
-Check out our [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines on submitting scrapers.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed scraper guidelines.
 
 ---
 
-Built with ❤️ using NestJS, Playwright, and AI
+## 🌟 Apertre 3.0 Contributors
+
+### Welcome, Apertre 3.0 Mentees! 🎉
+
+If you're participating in **Apertre 3.0**, we're excited to have you here! This project is beginner-friendly and we're here to help you succeed.
+
+### 📋 Important: Identifying Yourself
+
+> **⚠️ When creating any issue (bug report, feature request, scraper proposal), please add `Apertre 3.0` in your issue description if you are a participant!**
+
+This helps maintainers identify and prioritize your contributions during the program.
+
+### How to Mention Apertre 3.0
+
+When creating an issue, add this at the top of your description:
+
+```markdown
+**Program:** Apertre 3.0 Participant
+```
+
+Or use our dedicated [Apertre 3.0 Contributor Template](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=apertre_contributor.yml) when requesting to work on issues!
+
+### Good First Issues for Apertre 3.0
+
+Look for issues labeled:
+- 🏷️ `good first issue` - Perfect for beginners
+- 🏷️ `apertre3.0` - Specifically for program participants
+- 🏷️ `documentation` - Great for getting started
+- 🏷️ `help wanted` - We need your help!
+
+### Getting Help
+
+- 💬 **Discord**: Join our community server
+- 📝 **Issues**: Ask questions on GitHub issues
+- 📚 **Docs**: Read [CONTRIBUTING.md](./CONTRIBUTING.md) and [ARCHITECTURE.md](./ARCHITECTURE.md)
+
+---
+
+## 🔮 Roadmap
+
+### Current Focus
+- [x] Internshala scraper
+- [x] Basic automation pipeline
+- [ ] LinkedIn scraper
+- [ ] Indeed scraper
+- [ ] Multi-platform unified scraper
+
+### Future Plans
+- [ ] Chrome extension for quick applications
+- [ ] Mobile app
+- [ ] Interview preparation AI
+- [ ] Salary negotiation assistant
+
+---
+
+## 📊 Architecture Overview
+
+For a detailed technical deep-dive, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Frontend (React)                        │
+└────────────────────────┬────────────────────────────────────┘
+                         │ REST API
+┌────────────────────────▼────────────────────────────────────┐
+│              Backend API (NestJS + TypeScript)               │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ ScrapersService │ MatchingService │ LlmService      │    │
+│  │ ApplicationsService │ AutomationService │ ...       │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────┬───────────────────────────────────┘
+        ┌─────────────────┼─────────────────┐
+        ▼                 ▼                 ▼
+┌───────────────┐ ┌───────────────┐ ┌───────────────┐
+│  PostgreSQL   │ │   Playwright  │ │  LLM Provider │
+│  + pgvector   │ │   Browser     │ │ (Gemini/GPT)  │
+└───────────────┘ └───────────────┘ └───────────────┘
+```
+
+---
+
+## 🛡️ Security
+
+- 🔒 Never commit `.env` files
+- 🔑 Rotate API keys regularly
+- 🔐 Use environment variables for secrets
+- 🕵️ Credentials are only used during automation sessions
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [NestJS](https://nestjs.com/) - Backend framework
+- [Playwright](https://playwright.dev/) - Browser automation
+- [Google Gemini](https://ai.google.dev/) - AI/LLM capabilities
+- [pgvector](https://github.com/pgvector/pgvector) - Vector similarity search
+
+---
+
+<div align="center">
+
+**Built with ❤️ by [Jayati Ahuja](https://github.com/JAYATIAHUJA) and contributors**
+
+⭐ **Star this repo if you find it helpful!** ⭐
+
+[Report Bug](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=bug_report.yml) · [Request Feature](https://github.com/JAYATIAHUJA/HIRE/issues/new?template=feature_request.yml) · [Join Community](#)
+
+</div>
