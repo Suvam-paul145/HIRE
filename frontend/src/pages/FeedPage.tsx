@@ -83,17 +83,18 @@ function FeedPage() {
     return '#dc3545'; // Low match - red
   };
 
-  if (loading) {
+ if (loading) {
   return (
     <div className="feed-container">
       <div className="jobs-grid">
-        <JobCardSkeleton />
-        <JobCardSkeleton />
-        <JobCardSkeleton />
+        <JobCardSkeleton variant={1} />
+        <JobCardSkeleton variant={2} />
+        <JobCardSkeleton variant={3} />
       </div>
     </div>
   );
 }
+
 
 
   if (error) {
