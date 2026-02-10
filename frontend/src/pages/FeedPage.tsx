@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, JobCard } from '../api/client';
 import './FeedPage.css';
@@ -10,6 +10,12 @@ function FeedPage() {
   const [error, setError] = useState<string | null>(null);
   const [applying, setApplying] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Filter states
+  const [titleSearch, setTitleSearch] = useState('');
+  const [companySearch, setCompanySearch] = useState('');
+  const [platformFilter, setPlatformFilter] = useState<'all' | 'internshala' | 'linkedin'>('all');
+  const [minMatchScore, setMinMatchScore] = useState(0);
 
   const [userId] = useState(() => {
     // Check URL parameter first
@@ -23,6 +29,40 @@ function FeedPage() {
     const stored = localStorage.getItem('userId');
     return stored || null;
   });
+
+  // Filtered jobs using useMemo for performance
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      // Title search filter
+      const matchesTitle = titleSearch.trim() === '' || 
+        job.title.toLowerCase().includes(titleSearch.toLowerCase());
+
+      // Company search filter
+      const matchesCompany = companySearch.trim() === '' || 
+        job.company.toLowerCase().includes(companySearch.toLowerCase());
+
+      // Platform filter
+      const matchesPlatform = platformFilter === 'all' || 
+        job.platform === platformFilter;
+
+      // Match score filter
+      const matchesScore = job.matchScore >= minMatchScore;
+
+      return matchesTitle && matchesCompany && matchesPlatform && matchesScore;
+    });
+  }, [jobs, titleSearch, companySearch, platformFilter, minMatchScore]);
+
+  // Clear all filters
+  const clearFilters = () => {
+    setTitleSearch('');
+    setCompanySearch('');
+    setPlatformFilter('all');
+    setMinMatchScore(0);
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = titleSearch !== '' || companySearch !== '' || 
+    platformFilter !== 'all' || minMatchScore > 0;
 
   useEffect(() => {
     // If no user ID, redirect to onboarding
@@ -107,7 +147,8 @@ function FeedPage() {
         <div>
           <h1>🎯 Your Job Matches</h1>
           <p style={{ color: '#666', margin: '5px 0 0 0' }}>
-            {jobs.length} job{jobs.length !== 1 ? 's' : ''} sorted by match score (best matches first)
+            {filteredJobs.length} of {jobs.length} job{jobs.length !== 1 ? 's' : ''} 
+            {hasActiveFilters && ' (filtered)'}
           </p>
         </div>
         <div className="header-actions">
@@ -120,7 +161,80 @@ function FeedPage() {
         </div>
       </header>
 
-      {jobs.length === 0 ? (
+      {/* Filter Controls */}
+      <div className="filter-container">
+        <div className="filter-row">
+          <div className="filter-group">
+            <label htmlFor="title-search">🔍 Search by Title</label>
+            <input
+              id="title-search"
+              type="text"
+              placeholder="e.g. Software Engineer"
+              value={titleSearch}
+              onChange={(e) => setTitleSearch(e.target.value)}
+              className="filter-input"
+            />
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="company-search">🏢 Search by Company</label>
+            <input
+              id="company-search"
+              type="text"
+              placeholder="e.g. Google"
+              value={companySearch}
+              onChange={(e) => setCompanySearch(e.target.value)}
+              className="filter-input"
+            />
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="platform-filter">💼 Platform</label>
+            <select
+              id="platform-filter"
+              value={platformFilter}
+              onChange={(e) => setPlatformFilter(e.target.value as 'all' | 'internshala' | 'linkedin')}
+              className="filter-select"
+            >
+              <option value="all">All Platforms</option>
+              <option value="internshala">Internshala</option>
+              <option value="linkedin">LinkedIn</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="score-filter">
+              🎯 Min Match Score: {minMatchScore}%
+            </label>
+            <input
+              id="score-filter"
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={minMatchScore}
+              onChange={(e) => setMinMatchScore(Number(e.target.value))}
+              className="filter-range"
+            />
+          </div>
+        </div>
+
+        {hasActiveFilters && (
+          <button onClick={clearFilters} className="clear-filters-btn">
+            ✖ Clear All Filters
+          </button>
+        )}
+      </div>
+
+      {filteredJobs.length === 0 && jobs.length > 0 ? (
+        <div className="empty-state">
+          <h2>🔍 No matching jobs found</h2>
+          <p>Try adjusting your filters to see more results.</p>
+          <button onClick={clearFilters} className="primary-btn">
+            Clear Filters
+          </button>
+        </div>
+      ) : jobs.length === 0 ? (
         <div className="empty-state">
           <h2>📭 No jobs found</h2>
           <p>We haven't scraped any jobs yet. Let's get some!</p>
@@ -130,7 +244,7 @@ function FeedPage() {
         </div>
       ) : (
         <div className="jobs-grid">
-          {jobs.map((job) => (
+          {filteredJobs.map((job) => (
             <div key={job.jobId} className="job-card">
               <div
                 className="platform-badge"
