@@ -53,7 +53,7 @@ export default function LandingPage() {
                 rel="noopener noreferrer"
                 className="cta-primary"
               >
-                View on GitHub →
+                View on GitHub <span>→</span>
               </a>
             </div>
           </div>
