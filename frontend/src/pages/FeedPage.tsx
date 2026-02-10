@@ -1,3 +1,4 @@
+import JobCardSkeleton from './JobCardSkeleton';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, JobCard } from '../api/client';
@@ -83,12 +84,17 @@ function FeedPage() {
   };
 
   if (loading) {
-    return (
-      <div className="feed-container">
-        <div className="loading">Loading jobs...</div>
+  return (
+    <div className="feed-container">
+      <div className="jobs-grid">
+        <JobCardSkeleton />
+        <JobCardSkeleton />
+        <JobCardSkeleton />
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   if (error) {
     return (
