@@ -9,6 +9,7 @@ function App() {
     <Routes>
       <Route path="/" element={<FeedPage />} />
       <Route path="/feed" element={<FeedPage />} />
+      <Route path="/landing" element={<LandingPage />} />
       <Route path="/onboarding" element={<OnboardingPage />} />
       <Route path="/applications/:id" element={<ApplicationPreviewPage />} />
     </Routes>
