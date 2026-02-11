@@ -67,7 +67,7 @@ export const api = {
   },
 
   scrapeJobs: async (): Promise<{ internshala: number; linkedin: number }> => {
-    const response = await apiClient.post('/api/scrape-jobs');
+    const response = await apiClient.post('/api/scrapers/scrape-jobs');
     return response.data;
   },
 
