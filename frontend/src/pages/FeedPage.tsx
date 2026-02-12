@@ -1,4 +1,3 @@
-import JobCardSkeleton from './JobCardSkeleton';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, JobCard } from '../api/client';
@@ -86,14 +85,11 @@ function FeedPage() {
  if (loading) {
   return (
     <div className="feed-container">
-      <div className="jobs-grid">
-        <JobCardSkeleton variant={1} />
-        <JobCardSkeleton variant={2} />
-        <JobCardSkeleton variant={3} />
-      </div>
+      <div className="loading">Loading jobs...</div>
     </div>
   );
 }
+
 
 
 
