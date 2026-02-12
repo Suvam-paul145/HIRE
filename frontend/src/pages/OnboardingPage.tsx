@@ -46,23 +46,27 @@ function OnboardingPage() {
         const newErrors: { [key: string]: string } = {};
         let isValid = true;
 
-        if (!fullname.trim()) {
+        const trimmedFullname = fullname.trim();
+        const trimmedEmail = email.trim();
+        const trimmedResumeText = resumeText.trim();
+
+        if (!trimmedFullname) {
             newErrors.fullname = 'Full Name is required';
             isValid = false;
         }
 
-        if (!email.trim()) {
+        if (!trimmedEmail) {
             newErrors.email = 'Email is required';
             isValid = false;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
             newErrors.email = 'Invalid email format';
             isValid = false;
         }
 
-        if (!resumeText.trim()) {
+        if (!trimmedResumeText) {
             newErrors.resume = 'Resume text is required';
             isValid = false;
-        } else if (resumeText.trim().length < 50) {
+        } else if (trimmedResumeText.length < 50) {
             newErrors.resume = 'Please provide a more detailed resume (at least 50 characters)';
             isValid = false;
         }
@@ -83,9 +87,9 @@ function OnboardingPage() {
                 .filter((s) => s.length > 0);
 
             const response = await api.createUser({
-                fullname,
-                email,
-                masterResumeText: resumeText,
+                fullname: trimmedFullname,
+                email: trimmedEmail,
+                masterResumeText: trimmedResumeText,
                 skills: skillsArray,
             });
 
