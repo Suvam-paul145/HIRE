@@ -25,14 +25,19 @@ export interface Application {
   status: 'Drafting' | 'NeedsApproval' | 'Submitted' | 'Failed';
   previewScreenshotUrl?: string;
   tailoredResumeUrl?: string;
-  streamUrl?: string; // Live stream URL for watching automation
+  streamUrl?: string;
   failureReason?: string;
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+  submittedAt?: string;
   job: {
     id: string;
     title: string;
     company: string;
     platform: 'internshala' | 'linkedin';
     url: string;
+    location?: string;
   };
   user: {
     id: string;
@@ -88,6 +93,12 @@ export const api = {
 
   approveApplication: async (id: string) => {
     const response = await apiClient.post(`/api/applications/${id}/approve`, {});
+    return response.data;
+  },
+
+  // Get all applications for a user
+  getUserApplications: async (userId: string): Promise<Application[]> => {
+    const response = await apiClient.get(`/api/applications?userId=${userId}`);
     return response.data;
   },
 
