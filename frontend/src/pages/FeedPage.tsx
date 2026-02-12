@@ -152,6 +152,9 @@ function FeedPage() {
           </p>
         </div>
         <div className="header-actions">
+          <button onClick={() => navigate('/applications')} className="secondary-btn">
+            📋 History
+          </button>
           <button onClick={() => navigate('/onboarding')} className="secondary-btn">
             ⚙️ Settings
           </button>

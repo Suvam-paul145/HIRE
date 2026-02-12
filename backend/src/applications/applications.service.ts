@@ -187,7 +187,7 @@ export class ApplicationsService {
   async findByUser(userId: string): Promise<Application[]> {
     return this.applicationRepository.find({
       where: { userId },
-      relations: ['job'],
+      relations: ['job', 'user'],
       order: { createdAt: 'DESC' },
     });
   }
