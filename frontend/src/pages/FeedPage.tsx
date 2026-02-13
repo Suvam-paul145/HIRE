@@ -82,16 +82,13 @@ function FeedPage() {
     return '#dc3545'; // Low match - red
   };
 
- if (loading) {
-  return (
-    <div className="feed-container">
-      <div className="loading">Loading jobs...</div>
-    </div>
-  );
-}
-
-
-
+  if (loading) {
+    return (
+      <div className="feed-container">
+        <div className="loading">Loading jobs...</div>
+      </div>
+    );
+  }
 
   if (error) {
     return (

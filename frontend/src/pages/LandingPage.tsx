@@ -59,6 +59,9 @@ export default function LandingPage() {
               >
                 View on GitHub
               </a>
+              <Link to="/feed" className="cta-secondary">
+                View Feed
+              </Link>
             </div>
           </div>
 
