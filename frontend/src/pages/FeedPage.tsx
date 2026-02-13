@@ -125,7 +125,7 @@ function FeedPage() {
 
   if (loading) {
     return (
-     <div className="feed-container">
+      <div className="feed-container">
         <div className="jobs-grid">
           <JobCardSkeleton variant={1} />
           <JobCardSkeleton variant={2} />
@@ -134,9 +134,6 @@ function FeedPage() {
       </div>
     );
   }
-
-
-
 
   if (error) {
     return (
