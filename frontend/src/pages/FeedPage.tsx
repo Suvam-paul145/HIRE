@@ -1,4 +1,4 @@
-import JobCardSkeleton from './JobCardSkeleton';
+import JobCardSkeleton from '../components/JobCardSkeleton';
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, JobCard } from '../api/client';
@@ -35,15 +35,15 @@ function FeedPage() {
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
       // Title search filter
-      const matchesTitle = titleSearch.trim() === '' || 
+      const matchesTitle = titleSearch.trim() === '' ||
         job.title.toLowerCase().includes(titleSearch.toLowerCase());
 
       // Company search filter
-      const matchesCompany = companySearch.trim() === '' || 
+      const matchesCompany = companySearch.trim() === '' ||
         job.company.toLowerCase().includes(companySearch.toLowerCase());
 
       // Platform filter
-      const matchesPlatform = platformFilter === 'all' || 
+      const matchesPlatform = platformFilter === 'all' ||
         job.platform === platformFilter;
 
       // Match score filter
@@ -62,7 +62,7 @@ function FeedPage() {
   };
 
   // Check if any filters are active
-  const hasActiveFilters = titleSearch !== '' || companySearch !== '' || 
+  const hasActiveFilters = titleSearch !== '' || companySearch !== '' ||
     platformFilter !== 'all' || minMatchScore > 0;
 
   useEffect(() => {
@@ -152,7 +152,7 @@ function FeedPage() {
         <div>
           <h1>🎯 Your Job Matches</h1>
           <p style={{ color: '#666', margin: '5px 0 0 0' }}>
-            {filteredJobs.length} of {jobs.length} job{jobs.length !== 1 ? 's' : ''} 
+            {filteredJobs.length} of {jobs.length} job{jobs.length !== 1 ? 's' : ''}
             {hasActiveFilters && ' (filtered)'}
           </p>
         </div>
@@ -289,6 +289,3 @@ function FeedPage() {
 }
 
 export default FeedPage;
-
-
-
