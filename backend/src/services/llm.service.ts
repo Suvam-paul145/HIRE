@@ -1,15 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 @Injectable()
 export class LlmService {
-  private readonly logger = new Logger(LlmService.name);
   private openai: OpenAI | null = null;
   private gemini: GoogleGenerativeAI | null = null;
   private provider: string;
 
-  constructor() {
+  constructor(@InjectPinoLogger(LlmService.name) private readonly logger: PinoLogger) {
+    logger.setContext(LlmService.name);
     this.provider = process.env.LLM_PROVIDER || 'openai';
 
     if (this.provider === 'openai' && process.env.OPENAI_API_KEY) {
@@ -44,14 +45,15 @@ export class LlmService {
           });
           return response.data[0].embedding;
         } else if (this.provider === 'gemini' && this.gemini) {
-          const model = this.gemini.getGenerativeModel({ model: 'text-embedding-004' });
+          const model = this.gemini.getGenerativeModel({ model: 'embedding-001' });
           const result = await model.embedContent(text);
           return result.embedding.values;
         }
         throw new Error('No LLM provider configured');
       });
     } catch (error) {
-      this.logger.error(`Error generating embedding: ${error.message}`);
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error generating embedding: ${msg}`);
       throw error;
     }
   }
@@ -93,7 +95,8 @@ Return format: ["skill1", "skill2", "skill3"]`;
         throw new Error('No LLM provider configured');
       });
     } catch (error) {
-      this.logger.error(`Error extracting requirements: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error extracting requirements: ${errorMessage}`);
       // Fallback: return empty array
       return [];
     }
@@ -147,7 +150,8 @@ Return the tailored resume as plain text, optimized for this specific job.`;
         throw new Error('No LLM provider configured');
       });
     } catch (error) {
-      this.logger.error(`Error tailoring resume: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error tailoring resume: ${errorMessage}`);
       // Fallback: return original resume
       return masterResume;
     }
@@ -207,7 +211,8 @@ Example format: { "field_id_1": "Answer text", "field_id_2": "12" }
         return JSON.parse(cleaned);
       });
     } catch (error) {
-      this.logger.error(`Error answering questions: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error answering questions: ${errorMessage}`);
       // Fallback: simple mapping
       const fallback: Record<string, string> = {};
       questions.forEach(q => {
