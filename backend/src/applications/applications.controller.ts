@@ -126,6 +126,22 @@ export class ApplicationsController {
 
     // Return empty paginated response if no filters
     return { data: [], total: 0, limit, offset };
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ) {
+    const parsedLimit = Math.max(1, parseInt(limit ?? '20', 10) || 20);
+    const parsedOffset = Math.max(0, parseInt(offset ?? '0', 10) || 0);
+
+    if (status && userId) {
+      return this.applicationsService.findByStatus(status as any, userId, parsedLimit, parsedOffset);
+    } else if (status) {
+      return this.applicationsService.findByStatus(status as any, undefined, parsedLimit, parsedOffset);
+    } else if (userId) {
+      return this.applicationsService.findByUser(userId, parsedLimit, parsedOffset);
+    }
+
+    // Return empty result if no filters
+    return { data: [], total: 0, limit: parsedLimit, offset: parsedOffset };
   }
 
   /**

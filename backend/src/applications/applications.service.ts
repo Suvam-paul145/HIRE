@@ -184,11 +184,7 @@ export class ApplicationsService {
     });
   }
 
-  async findByUser(
-    userId: string,
-    limit = 20,
-    offset = 0,
-  ): Promise<{ data: Application[]; total: number; limit: number; offset: number }> {
+  async findByUser(userId: string, limit = 20, offset = 0): Promise<{ data: Application[]; total: number; limit: number; offset: number }> {
     const [data, total] = await this.applicationRepository.findAndCount({
       where: { userId },
       relations: ['job', 'user'],
@@ -199,12 +195,7 @@ export class ApplicationsService {
     return { data, total, limit, offset };
   }
 
-  async findByStatus(
-    status: ApplicationStatus,
-    userId?: string,
-    limit = 20,
-    offset = 0,
-  ): Promise<{ data: Application[]; total: number; limit: number; offset: number }> {
+  async findByStatus(status: ApplicationStatus, userId?: string, limit = 20, offset = 0): Promise<{ data: Application[]; total: number; limit: number; offset: number }> {
     const where: any = { status };
     if (userId) {
       where.userId = userId;

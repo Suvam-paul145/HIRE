@@ -200,23 +200,12 @@ export class UsersController {
    */
   @Get()
   async getAll(
-    @Query('limit') limitStr?: string,
-    @Query('offset') offsetStr?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
   ) {
-    const limit = Math.min(Math.max(parseInt(limitStr ?? '20', 10) || 20, 1), 100);
-    const offset = Math.max(parseInt(offsetStr ?? '0', 10) || 0, 0);
-    const result = await this.usersService.findAll(limit, offset);
-    return {
-      data: result.data.map((u) => ({
-        id: u.id,
-        email: u.email,
-        fullname: u.fullname,
-        skills: u.skills,
-      })),
-      total: result.total,
-      limit: result.limit,
-      offset: result.offset,
-    };
+    const parsedLimit = Math.max(1, parseInt(limit ?? '20', 10) || 20);
+    const parsedOffset = Math.max(0, parseInt(offset ?? '0', 10) || 0);
+    return this.usersService.findAll(parsedLimit, parsedOffset);
   }
 
   /**
