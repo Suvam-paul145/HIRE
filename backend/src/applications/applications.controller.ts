@@ -107,17 +107,25 @@ export class ApplicationsController {
    * Get all applications for a user
    */
   @Get()
-  async getAll(@Query('userId') userId?: string, @Query('status') status?: string) {
+  async getAll(
+    @Query('userId') userId?: string,
+    @Query('status') status?: string,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ) {
+    const parsedLimit = Math.max(1, parseInt(limit ?? '20', 10) || 20);
+    const parsedOffset = Math.max(0, parseInt(offset ?? '0', 10) || 0);
+
     if (status && userId) {
-      return this.applicationsService.findByStatus(status as any, userId);
+      return this.applicationsService.findByStatus(status as any, userId, parsedLimit, parsedOffset);
     } else if (status) {
-      return this.applicationsService.findByStatus(status as any);
+      return this.applicationsService.findByStatus(status as any, undefined, parsedLimit, parsedOffset);
     } else if (userId) {
-      return this.applicationsService.findByUser(userId);
+      return this.applicationsService.findByUser(userId, parsedLimit, parsedOffset);
     }
 
-    // Return empty array if no filters
-    return [];
+    // Return empty result if no filters
+    return { data: [], total: 0, limit: parsedLimit, offset: parsedOffset };
   }
 
   /**

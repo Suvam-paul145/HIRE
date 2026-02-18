@@ -4,6 +4,7 @@ import {
   Body,
   Get,
   Param,
+  Query,
   BadRequestException,
   HttpCode,
   HttpStatus,
@@ -192,6 +193,19 @@ export class UsersController {
     return {
       message: 'Resume updated successfully',
     };
+  }
+
+  /**
+   * Get all users (paginated)
+   */
+  @Get()
+  async getAll(
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ) {
+    const parsedLimit = Math.max(1, parseInt(limit ?? '20', 10) || 20);
+    const parsedOffset = Math.max(0, parseInt(offset ?? '0', 10) || 0);
+    return this.usersService.findAll(parsedLimit, parsedOffset);
   }
 
   /**
