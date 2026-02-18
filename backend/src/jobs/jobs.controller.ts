@@ -56,13 +56,19 @@ export class JobsController {
   ) { }
 
   @Get('feed')
-  async getFeed(@Query('userId') userId: string) {
+  async getFeed(
+    @Query('userId') userId: string,
+    @Query('limit') limitStr?: string,
+    @Query('offset') offsetStr?: string,
+  ) {
     if (!userId) {
       return { error: 'userId is required' };
     }
 
-    const feed = await this.jobsService.getFeedForUser(userId);
-    return feed;
+    const limit = Math.min(Math.max(parseInt(limitStr ?? '20', 10) || 20, 1), 100);
+    const offset = Math.max(parseInt(offsetStr ?? '0', 10) || 0, 0);
+
+    return this.jobsService.getFeedForUser(userId, limit, offset);
   }
 
   /**

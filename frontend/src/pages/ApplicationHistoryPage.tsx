@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, Application } from '../api/client';
 import './ApplicationHistoryPage.css';
 
+const PAGE_SIZE = 10;
+
 function ApplicationHistoryPage() {
   const [applications, setApplications] = useState<Application[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -13,33 +17,30 @@ function ApplicationHistoryPage() {
     return localStorage.getItem('userId') || null;
   });
 
+  const loadApplications = useCallback(async (currentPage: number) => {
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await api.getUserApplications(userId, PAGE_SIZE, currentPage * PAGE_SIZE);
+      setApplications(result.data);
+      setTotal(result.total);
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || 'Failed to load applications');
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
   useEffect(() => {
     if (!userId) {
       navigate('/onboarding');
       return;
     }
 
-    loadApplications();
-  }, [userId, navigate]);
-
-  const loadApplications = async () => {
-    if (!userId) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const apps = await api.getUserApplications(userId);
-      // Sort by most recent first
-      const sorted = apps.sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      setApplications(sorted);
-    } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'Failed to load applications');
-    } finally {
-      setLoading(false);
-    }
-  };
+    loadApplications(page);
+  }, [userId, navigate, page, loadApplications]);
 
   const getStatusBadge = (status: string) => {
     const badges = {
@@ -87,7 +88,7 @@ function ApplicationHistoryPage() {
     return (
       <div className="history-container">
         <div className="error">{error}</div>
-        <button onClick={loadApplications} className="retry-btn">
+        <button onClick={() => loadApplications(page)} className="retry-btn">
           🔄 Retry
         </button>
       </div>
@@ -100,20 +101,20 @@ function ApplicationHistoryPage() {
         <div>
           <h1>📋 Application History</h1>
           <p className="subtitle">
-            {applications.length} application{applications.length !== 1 ? 's' : ''} total
+            {total} application{total !== 1 ? 's' : ''} total
           </p>
         </div>
         <div className="header-actions">
           <button onClick={() => navigate('/')} className="secondary-btn">
             ← Back to Feed
           </button>
-          <button onClick={loadApplications} className="refresh-btn">
+          <button onClick={() => loadApplications(page)} className="refresh-btn">
             🔄 Refresh
           </button>
         </div>
       </header>
 
-      {applications.length === 0 ? (
+      {total === 0 ? (
         <div className="empty-state">
           <h2>📭 No Applications Yet</h2>
           <p>You haven't applied to any jobs yet. Start applying to see your history here!</p>
@@ -122,68 +123,92 @@ function ApplicationHistoryPage() {
           </button>
         </div>
       ) : (
-        <div className="applications-list">
-          {applications.map((app) => {
-            const statusBadge = getStatusBadge(app.status);
-            
-            return (
-              <div key={app.id} className="application-card">
-                <div className="application-header">
-                  <div className="job-info">
-                    <h3 className="job-title">{app.job.title}</h3>
-                    <p className="job-company">
-                      🏢 {app.job.company}
-                      {app.job.location && ` • 📍 ${app.job.location}`}
-                    </p>
-                  </div>
-                  <div
-                    className="platform-badge"
-                    style={{ backgroundColor: getPlatformColor(app.job.platform) }}
-                  >
-                    {app.job.platform === 'internshala' ? 'Internshala' : 'LinkedIn'}
-                  </div>
-                </div>
-
-                <div className="application-meta">
-                  <div
-                    className="status-badge"
-                    style={{ backgroundColor: statusBadge.color }}
-                  >
-                    {statusBadge.text}
-                  </div>
-                  <div className="timestamp">
-                    🕒 Applied {formatDate(app.createdAt)}
-                  </div>
-                </div>
-
-                {app.failureReason && (
-                  <div className="failure-reason">
-                    ⚠️ {app.failureReason}
-                  </div>
-                )}
-
-                <div className="application-actions">
-                  <button
-                    onClick={() => navigate(`/applications/${app.id}`)}
-                    className="view-btn"
-                  >
-                    👁️ View Details
-                  </button>
-                  {app.job.url && (
-                    <a
-                      href={app.job.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="job-link-btn"
+        <>
+          <div className="applications-list">
+            {applications.map((app) => {
+              const statusBadge = getStatusBadge(app.status);
+              
+              return (
+                <div key={app.id} className="application-card">
+                  <div className="application-header">
+                    <div className="job-info">
+                      <h3 className="job-title">{app.job.title}</h3>
+                      <p className="job-company">
+                        🏢 {app.job.company}
+                        {app.job.location && ` • 📍 ${app.job.location}`}
+                      </p>
+                    </div>
+                    <div
+                      className="platform-badge"
+                      style={{ backgroundColor: getPlatformColor(app.job.platform) }}
                     >
-                      🔗 View Job
-                    </a>
+                      {app.job.platform === 'internshala' ? 'Internshala' : 'LinkedIn'}
+                    </div>
+                  </div>
+
+                  <div className="application-meta">
+                    <div
+                      className="status-badge"
+                      style={{ backgroundColor: statusBadge.color }}
+                    >
+                      {statusBadge.text}
+                    </div>
+                    <div className="timestamp">
+                      🕒 Applied {formatDate(app.createdAt)}
+                    </div>
+                  </div>
+
+                  {app.failureReason && (
+                    <div className="failure-reason">
+                      ⚠️ {app.failureReason}
+                    </div>
                   )}
+
+                  <div className="application-actions">
+                    <button
+                      onClick={() => navigate(`/applications/${app.id}`)}
+                      className="view-btn"
+                    >
+                      👁️ View Details
+                    </button>
+                    {app.job.url && (
+                      <a
+                        href={app.job.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="job-link-btn"
+                      >
+                        🔗 View Job
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+
+          {total > PAGE_SIZE && (
+            <div className="pagination">
+              <button
+                className="pagination-btn"
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
+              >
+                ← Previous
+              </button>
+              <span className="pagination-info">
+                Page {page + 1} of {Math.ceil(total / PAGE_SIZE)}
+              </span>
+              <button
+                className="pagination-btn"
+                onClick={() => setPage((p) => p + 1)}
+                disabled={(page + 1) * PAGE_SIZE >= total}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

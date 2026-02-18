@@ -80,10 +80,14 @@ export class JobsService {
     return job;
   }
 
-  async getFeedForUser(userId: string): Promise<any[]> {
+  async getFeedForUser(
+    userId: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<{ data: any[]; total: number; limit: number; offset: number }> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      return [];
+      return { data: [], total: 0, limit, offset };
     }
 
     // Ensure user has profile vector
@@ -101,7 +105,7 @@ export class JobsService {
       }),
     );
 
-    // Sort by match score (highest first, lowest last) - show ALL jobs
+    // Sort by match score (highest first)
     const sorted = jobsWithScores
       .sort((a, b) => b.score - a.score)
       .map(({ job, score }) => ({
@@ -109,12 +113,15 @@ export class JobsService {
         platform: job.platform,
         title: job.title,
         company: job.company,
-        matchScore: Math.round(score * 100), // Convert to percentage (0-100)
+        matchScore: Math.round(score * 100),
         shortSummary: job.description.substring(0, 200) + '...',
         location: job.location || 'Not specified',
       }));
 
-    return sorted;
+    const total = sorted.length;
+    const data = sorted.slice(offset, offset + limit);
+
+    return { data, total, limit, offset };
   }
 
   async findOne(id: string): Promise<JobListing | null> {

@@ -184,25 +184,40 @@ export class ApplicationsService {
     });
   }
 
-  async findByUser(userId: string): Promise<Application[]> {
-    return this.applicationRepository.find({
+  async findByUser(
+    userId: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<{ data: Application[]; total: number; limit: number; offset: number }> {
+    const [data, total] = await this.applicationRepository.findAndCount({
       where: { userId },
       relations: ['job', 'user'],
       order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
     });
+    return { data, total, limit, offset };
   }
 
-  async findByStatus(status: ApplicationStatus, userId?: string): Promise<Application[]> {
+  async findByStatus(
+    status: ApplicationStatus,
+    userId?: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<{ data: Application[]; total: number; limit: number; offset: number }> {
     const where: any = { status };
     if (userId) {
       where.userId = userId;
     }
 
-    return this.applicationRepository.find({
+    const [data, total] = await this.applicationRepository.findAndCount({
       where,
       relations: ['user', 'job'],
       order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
     });
+    return { data, total, limit, offset };
   }
 
   async approveApplication(id: string, userId?: string): Promise<Application> {

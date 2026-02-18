@@ -104,20 +104,28 @@ export class ApplicationsController {
   }
 
   /**
-   * Get all applications for a user
+   * Get all applications for a user (paginated)
    */
   @Get()
-  async getAll(@Query('userId') userId?: string, @Query('status') status?: string) {
+  async getAll(
+    @Query('userId') userId?: string,
+    @Query('status') status?: string,
+    @Query('limit') limitStr?: string,
+    @Query('offset') offsetStr?: string,
+  ) {
+    const limit = Math.min(Math.max(parseInt(limitStr ?? '20', 10) || 20, 1), 100);
+    const offset = Math.max(parseInt(offsetStr ?? '0', 10) || 0, 0);
+
     if (status && userId) {
-      return this.applicationsService.findByStatus(status as any, userId);
+      return this.applicationsService.findByStatus(status as any, userId, limit, offset);
     } else if (status) {
-      return this.applicationsService.findByStatus(status as any);
+      return this.applicationsService.findByStatus(status as any, undefined, limit, offset);
     } else if (userId) {
-      return this.applicationsService.findByUser(userId);
+      return this.applicationsService.findByUser(userId, limit, offset);
     }
 
-    // Return empty array if no filters
-    return [];
+    // Return empty paginated response if no filters
+    return { data: [], total: 0, limit, offset };
   }
 
   /**

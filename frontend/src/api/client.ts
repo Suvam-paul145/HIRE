@@ -53,6 +53,13 @@ export interface BrowserProfile {
   createdAt: string;
 }
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 export const api = {
   // User APIs
   createUser: async (userData: {
@@ -66,8 +73,14 @@ export const api = {
   },
 
   // Job APIs
-  getFeed: async (userId: string): Promise<JobCard[]> => {
-    const response = await apiClient.get(`/api/feed?userId=${userId}`);
+  getFeed: async (
+    userId: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<PaginatedResponse<JobCard>> => {
+    const response = await apiClient.get(
+      `/api/feed?userId=${userId}&limit=${limit}&offset=${offset}`,
+    );
     return response.data;
   },
 
@@ -96,9 +109,15 @@ export const api = {
     return response.data;
   },
 
-  // Get all applications for a user
-  getUserApplications: async (userId: string): Promise<Application[]> => {
-    const response = await apiClient.get(`/api/applications?userId=${userId}`);
+  // Get applications for a user (paginated)
+  getUserApplications: async (
+    userId: string,
+    limit = 20,
+    offset = 0,
+  ): Promise<PaginatedResponse<Application>> => {
+    const response = await apiClient.get(
+      `/api/applications?userId=${userId}&limit=${limit}&offset=${offset}`,
+    );
     return response.data;
   },
 
