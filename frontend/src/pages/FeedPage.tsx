@@ -1,12 +1,16 @@
 import JobCardSkeleton from '../components/JobCardSkeleton';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, JobCard } from '../api/client';
 import './FeedPage.css';
 
+const PAGE_SIZE = 20;
+
 function FeedPage() {
   const [searchParams] = useSearchParams();
   const [jobs, setJobs] = useState<JobCard[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [applying, setApplying] = useState<string | null>(null);
@@ -65,6 +69,22 @@ function FeedPage() {
   const hasActiveFilters = titleSearch !== '' || companySearch !== '' ||
     platformFilter !== 'all' || minMatchScore > 0;
 
+  const loadFeed = useCallback(async (currentPage: number) => {
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await api.getFeed(userId, PAGE_SIZE, currentPage * PAGE_SIZE);
+      setJobs(result.data);
+      setTotal(result.total);
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || 'Failed to load feed');
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
   useEffect(() => {
     // If no user ID, redirect to onboarding
     if (!userId) {
@@ -72,23 +92,8 @@ function FeedPage() {
       return;
     }
 
-    loadFeed();
-  }, [userId, navigate]);
-
-  const loadFeed = async () => {
-    if (!userId) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const feed = await api.getFeed(userId);
-      setJobs(feed);
-    } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'Failed to load feed');
-    } finally {
-      setLoading(false);
-    }
-  };
+    loadFeed(page);
+  }, [userId, navigate, page, loadFeed]);
 
   const handleApply = async (jobId: string) => {
     if (!userId) return;
@@ -152,7 +157,7 @@ function FeedPage() {
         <div>
           <h1>🎯 Your Job Matches</h1>
           <p style={{ color: '#666', margin: '5px 0 0 0' }}>
-            {filteredJobs.length} of {jobs.length} job{jobs.length !== 1 ? 's' : ''}
+            {filteredJobs.length} of {total} job{total !== 1 ? 's' : ''}
             {hasActiveFilters && ' (filtered)'}
           </p>
         </div>
@@ -163,7 +168,7 @@ function FeedPage() {
           <button onClick={() => navigate('/onboarding')} className="secondary-btn">
             ⚙️ Settings
           </button>
-          <button onClick={loadFeed} className="refresh-btn">
+          <button onClick={() => loadFeed(page)} className="refresh-btn">
             🔄 Refresh
           </button>
         </div>
@@ -251,38 +256,62 @@ function FeedPage() {
           </button>
         </div>
       ) : (
-        <div className="jobs-grid">
-          {filteredJobs.map((job) => (
-            <div key={job.jobId} className="job-card">
-              <div
-                className="platform-badge"
-                style={{ backgroundColor: getPlatformColor(job.platform) }}
-              >
-                {getPlatformBadge(job.platform)}
+        <>
+          <div className="jobs-grid">
+            {filteredJobs.map((job) => (
+              <div key={job.jobId} className="job-card">
+                <div
+                  className="platform-badge"
+                  style={{ backgroundColor: getPlatformColor(job.platform) }}
+                >
+                  {getPlatformBadge(job.platform)}
+                </div>
+                <h2 className="job-title">{job.title}</h2>
+                <p className="job-company">🏢 {job.company}</p>
+                <p className="job-location">📍 {job.location}</p>
+                <div
+                  className="match-score"
+                  style={{
+                    backgroundColor: getMatchColor(job.matchScore),
+                    color: job.matchScore >= 40 && job.matchScore < 80 ? '#333' : 'white'
+                  }}
+                >
+                  🎯 {job.matchScore}% Match
+                </div>
+                <p className="job-summary">{job.shortSummary}</p>
+                <button
+                  className="apply-btn"
+                  onClick={() => handleApply(job.jobId)}
+                  disabled={applying === job.jobId}
+                >
+                  {applying === job.jobId ? '⏳ Applying...' : '✅ Apply Now'}
+                </button>
               </div>
-              <h2 className="job-title">{job.title}</h2>
-              <p className="job-company">🏢 {job.company}</p>
-              <p className="job-location">📍 {job.location}</p>
-              <div
-                className="match-score"
-                style={{
-                  backgroundColor: getMatchColor(job.matchScore),
-                  color: job.matchScore >= 40 && job.matchScore < 80 ? '#333' : 'white'
-                }}
-              >
-                🎯 {job.matchScore}% Match
-              </div>
-              <p className="job-summary">{job.shortSummary}</p>
+            ))}
+          </div>
+
+          {total > PAGE_SIZE && (
+            <div className="feed-pagination">
               <button
-                className="apply-btn"
-                onClick={() => handleApply(job.jobId)}
-                disabled={applying === job.jobId}
+                className="pagination-btn"
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
               >
-                {applying === job.jobId ? '⏳ Applying...' : '✅ Apply Now'}
+                ← Previous
+              </button>
+              <span className="pagination-info">
+                Page {page + 1} of {Math.ceil(total / PAGE_SIZE)}
+              </span>
+              <button
+                className="pagination-btn"
+                onClick={() => setPage((p) => p + 1)}
+                disabled={(page + 1) * PAGE_SIZE >= total}
+              >
+                Next →
               </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
     </div>
   );
