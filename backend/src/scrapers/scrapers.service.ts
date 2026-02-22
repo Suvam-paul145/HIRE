@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import { InternshalaScraperV2 } from './internshala-v2.scraper';
 import { LinkedInScraper } from './linkedin.scraper';
+import { UniversalScraper } from './universal.scraper';
+import { RssScraper } from './rss.scraper';
 import { JobsService } from '../jobs/jobs.service';
 import { JobListing } from '../jobs/entities/job-listing.entity';
 import { User } from '../users/entities/user.entity';
@@ -11,6 +13,7 @@ import { User } from '../users/entities/user.entity';
 export interface ScrapeResult {
   internshala: number;
   linkedin: number;
+  rss?: number;
   removed: number;
   duration: number;
 }
@@ -20,6 +23,8 @@ export class ScrapersService {
   constructor(
     private internshalaScraperV2: InternshalaScraperV2,
     private linkedInScraper: LinkedInScraper,
+    private universalScraper: UniversalScraper,
+    private rssScraper: RssScraper,
     private jobsService: JobsService,
     @InjectRepository(JobListing)
     private jobRepository: Repository<JobListing>,
@@ -102,14 +107,14 @@ export class ScrapersService {
     const removedCount = await this.clearStaleJobs(7);
 
     // Scrape Internshala
-    const internshalaJobs = await this.internshalaScraperV2.scrapeJobs(200);
+    // Reduced count for faster feedback during demo/testing
+    const internshalaJobs = await this.internshalaScraperV2.scrapeJobs(20); 
     let internshalaCount = 0;
 
     for (const job of internshalaJobs) {
       try {
         await this.jobsService.saveScrapedJob('internshala', job);
         internshalaCount++;
-        await new Promise(resolve => setTimeout(resolve, 500));
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         this.logger.error(`Error saving Internshala job: ${errorMessage}`);
@@ -117,7 +122,8 @@ export class ScrapersService {
     }
 
     // Scrape LinkedIn
-    const linkedinJobs = await this.linkedInScraper.scrapeJobs(50);
+    // Reduced count for faster feedback
+    const linkedinJobs = await this.linkedInScraper.scrapeJobs(10);
     let linkedinCount = 0;
 
     for (const job of linkedinJobs) {
@@ -131,6 +137,25 @@ export class ScrapersService {
       }
     }
 
+    // Scrape RSS Feeds (We Work Remotely, Remotive)
+    const rssSources = [
+      { url: 'https://weworkremotely.com/remote-jobs.rss', name: 'weworkremotely' },
+      { url: 'https://remotive.io/remote-jobs/feed', name: 'remotive' }
+    ];
+
+    let rssCount = 0;
+    for (const source of rssSources) {
+      const rssJobs = await this.rssScraper.scrapeFeed(source.url, source.name);
+      for (const job of rssJobs) {
+        try {
+          await this.jobsService.saveScrapedJob('other', job);
+          rssCount++;
+        } catch (error) {
+          this.logger.error(`Error saving RSS job from ${source.name}: ${error.message}`);
+        }
+      }
+    }
+
     const duration = Math.round((Date.now() - startTime) / 1000);
 
     this.logger.info(`✅ Scraping complete in ${duration}s: ${internshalaCount} Internshala, ${linkedinCount} LinkedIn, ${removedCount} removed`);
@@ -138,6 +163,7 @@ export class ScrapersService {
     return {
       internshala: internshalaCount,
       linkedin: linkedinCount,
+      rss: rssCount,
       removed: removedCount,
       duration,
     };
@@ -198,5 +224,20 @@ export class ScrapersService {
       .getCount();
 
     return { total, internshala, linkedin, recentlyUpdated };
+  }
+
+  async scrapeUniversalJob(url: string): Promise<JobListing> {
+    try {
+      const scrapedJob = await this.universalScraper.scrapeJob(url);
+
+      if (!scrapedJob) {
+        throw new Error(`Could not extract job details. The site might be blocking bots or the content is not a supported job posting.`);
+      }
+
+      return await this.jobsService.saveScrapedJob('other', scrapedJob);
+    } catch (error) {
+      this.logger.error(`Universal scrape failed for ${url}: ${error.message}`);
+      throw new Error(error.message); // Re-throw to be handled by controller
+    }
   }
 }
