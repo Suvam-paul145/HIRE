@@ -34,7 +34,7 @@ export class LlmService {
     }
   }
 
-  async generateEmbedding(text: string): Promise<number[]> {
+  async generateEmbedding(text: string): Promise<number[] | null> {
     try {
       return await this.withRetry(async () => {
         if (this.provider === 'openai' && this.openai) {
@@ -44,17 +44,32 @@ export class LlmService {
           });
           return response.data[0].embedding;
         } else if (this.provider === 'gemini' && this.gemini) {
-          const model = this.gemini.getGenerativeModel({ model: 'text-embedding-004' });
-          const result = await model.embedContent(text);
-          return result.embedding.values;
+          try {
+             // Try the latest first
+             const model = this.gemini.getGenerativeModel({ model: 'text-embedding-004' });
+             const result = await model.embedContent(text);
+             return result.embedding.values;
+          } catch (e) {
+             // Fallback to older model
+             this.logger.warn(`Failed to use text-embedding-004, trying embedding-001: ${e.message}`);
+             try {
+                 const model = this.gemini.getGenerativeModel({ model: 'embedding-001' });
+                 const result = await model.embedContent(text);
+                 return result.embedding.values;
+             } catch (e2) {
+                 this.logger.error(`Both embedding models failed: ${e2.message}`);
+                 return null;
+             }
+          }
         }
-        throw new Error('No LLM provider configured');
+        return null; // No provider
       });
     } catch (error) {
-      this.logger.error(`Error generating embedding: ${error.message}`);
-      throw error;
+       this.logger.error(`Error generating embedding: ${error.message}`);
+       return null;
     }
   }
+
 
   async extractRequirements(jobDescription: string): Promise<string[]> {
     const prompt = `Extract the key skills, technologies, and requirements from this job description. Return only a JSON array of strings, no other text.
