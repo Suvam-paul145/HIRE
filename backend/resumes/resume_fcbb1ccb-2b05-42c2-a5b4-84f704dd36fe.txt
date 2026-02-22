@@ -1,0 +1,20 @@
+Summary
+Motivated Python Developer / Machine Learning Enthusiast with strong foundations in Python,
+SQL, and data analysis. Hands-on experience in building data-driven applications, training machine
+learning models, and working with real-world datasets. Adept at problem-solving, writing clean code, and
+applying ML concepts to practical use cases.
+Education
+Bachelor of Technology – Computer Science and Engineering 2021 – 2025
+PSCMR College of Engineering & Technology CGPA: 8.03
+Intermediate (MPC) 2019 – 2021
+Sreemathi G. Sakuntalamma Junior College CGPA: 9.43
+Experience
+Machine Learning Intern – SkillDzir Online Jun 2024 – Aug 2024
+• Worked on data preprocessing, feature engineering, and exploratory data analysis using Python.
+• Built and evaluated machine learning models for classification and regression problems.
+• Used SQL queries to extract, clean, and analyze structured datasets.
+• Applied model evaluation techniques such as accuracy, precision, recall, and RMSE.
+Software Engineering Intern – Codegnan IT Solutions, Vijayawada May 2024 – Nov 2024
+• Developed backend logic and scripts using Python for data-driven applications.
+• Worked with SQL databases to perform CRUD operations and optimize queries.
+• Collaborated in an Agile environment, understanding end-to-end application workflows
