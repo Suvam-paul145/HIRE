@@ -6,6 +6,7 @@ import { User } from '../users/entities/user.entity';
 import { JobListing } from '../jobs/entities/job-listing.entity';
 import { LlmService } from '../services/llm.service';
 import { SimpleAutomationService } from '../services/simple-automation.service';
+import { AdvancedAutomationService } from '../services/advanced-automation.service';
 import { AuditLogService } from '../services/audit-log.service';
 import { JobsService } from '../jobs/jobs.service';
 import { UsersService } from '../users/users.service';
@@ -27,6 +28,7 @@ export class ApplicationsService {
     private jobRepository: Repository<JobListing>,
     private llmService: LlmService,
     private simpleAutomation: SimpleAutomationService,
+    private advancedAutomation: AdvancedAutomationService,
     private auditLogService: AuditLogService,
     private jobsService: JobsService,
     private usersService: UsersService,
@@ -149,13 +151,27 @@ export class ApplicationsService {
 
       this.logger.log('🚀 Starting Playwright Automation...');
 
+      let result;
       try {
-        const result = await this.simpleAutomation.applyToInternshala(
-          job.url,
-          credentials,
-          userProfile,
-          tailoredResume,
-        );
+        if (job.platform === 'internshala') {
+          result = await this.simpleAutomation.applyToInternshala(
+            job.url,
+            credentials,
+            userProfile,
+            tailoredResume,
+          );
+        } else {
+           // Use Advanced Automation for everything else
+           this.logger.log(`Using Advanced Automation for platform: ${job.platform}`);
+           result = await this.advancedAutomation.applyToGenericJob(
+             job.url,
+             {
+               userProfile,
+               resumeText: tailoredResume, 
+               resumePath: resumePath
+             }
+           );
+        }
 
         if (result.success) {
           this.logger.log('✅ Application submitted successfully!');
