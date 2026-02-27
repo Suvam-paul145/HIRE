@@ -29,7 +29,13 @@ async function bootstrap() {
           return false;
         }
       });
-      allowedOrigins = validOrigins.length > 0 ? validOrigins : '*';
+      if (validOrigins.length > 0) {
+        allowedOrigins = validOrigins;
+      } else {
+        logger.error(
+          'CORS_ORIGIN is set but contains no valid URLs. Falling back to wildcard (*).',
+        );
+      }
     }
 
     if (allowedOrigins === '*' && process.env.NODE_ENV === 'production') {
