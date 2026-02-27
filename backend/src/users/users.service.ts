@@ -133,7 +133,12 @@ export class UsersService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll(page: number = 1, limit: number = 10): Promise<{ data: User[]; total: number }> {
+    const [data, total] = await this.userRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+    return { data, total };
   }
 }
