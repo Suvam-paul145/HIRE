@@ -14,8 +14,33 @@ async function bootstrap() {
       new FastifyAdapter({ logger: true }),
     );
 
+    // CORS: read allowed origins from environment variable
+    const corsOrigin = process.env.CORS_ORIGIN;
+    let allowedOrigins: string | string[] = '*';
+
+    if (corsOrigin) {
+      const origins = corsOrigin.split(',').map((o) => o.trim()).filter(Boolean);
+      const validOrigins = origins.filter((o) => {
+        try {
+          new URL(o);
+          return true;
+        } catch {
+          logger.warn(`Invalid CORS origin ignored: ${o}`);
+          return false;
+        }
+      });
+      allowedOrigins = validOrigins.length > 0 ? validOrigins : '*';
+    }
+
+    if (allowedOrigins === '*' && process.env.NODE_ENV === 'production') {
+      logger.warn(
+        'CORS is configured with wildcard (*) in production. Set CORS_ORIGIN for secure configuration.',
+      );
+    }
+
     app.enableCors({
-      origin: '*', // Allow all origins for testing
+      origin: allowedOrigins,
+      methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: true,
     });
 
@@ -44,6 +69,7 @@ async function bootstrap() {
     logger.log('='.repeat(60));
     logger.log(`Server: http://localhost:${port}`);
     logger.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.log(`CORS Origins: ${Array.isArray(allowedOrigins) ? allowedOrigins.join(', ') : allowedOrigins}`);
     logger.log('='.repeat(60));
   } catch (error) {
     logger.error('Failed to start application:', error);
