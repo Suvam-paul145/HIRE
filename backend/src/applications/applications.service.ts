@@ -170,8 +170,8 @@ export class ApplicationsService {
            result = await this.advancedAutomation.applyToGenericJob(
              job.url,
              {
-               userProfile,
-               resumeText: tailoredResume, 
+               userProfile: user,
+               resumeText: tailoredResume,
                resumePath: resumePath
              }
            );
