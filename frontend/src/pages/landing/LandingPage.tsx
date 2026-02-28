@@ -1,4 +1,5 @@
-﻿import { motion, type Easing } from 'framer-motion';
+﻿import { lazy, Suspense } from 'react';
+import { motion, type Easing } from 'framer-motion';
 import {
   GrainOverlay,
   Navbar,
@@ -13,6 +14,8 @@ import {
 import { useLenis } from './hooks/useSmoothScroll';
 import './styles/global.css';
 
+const BackgroundCanvas = lazy(() => import('./components/BackgroundCanvas'));
+
 const ease: Easing = [0.77, 0, 0.175, 1];
 
 export default function LandingPage() {
@@ -25,6 +28,9 @@ export default function LandingPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease }}
     >
+      <Suspense fallback={null}>
+        <BackgroundCanvas />
+      </Suspense>
       <GrainOverlay />
       <Navbar />
       <Hero />
