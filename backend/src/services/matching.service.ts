@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -7,15 +8,16 @@ import { LlmService } from './llm.service';
 
 @Injectable()
 export class MatchingService {
-  private readonly logger = new Logger(MatchingService.name);
-
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(JobListing)
     private jobRepository: Repository<JobListing>,
     private llmService: LlmService,
-  ) {}
+    @InjectPinoLogger(MatchingService.name) private readonly logger: PinoLogger,
+  ) {
+    logger.setContext(MatchingService.name);
+  }
 
   async computeMatchScore(userId: string, jobId: string): Promise<number> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
