@@ -166,7 +166,7 @@ export class ApplicationsService {
           );
         } else {
            // Use Advanced Automation for everything else
-           this.logger.log(`Using Advanced Automation for platform: ${job.platform}`);
+           this.logger.info(`Using Advanced Automation for platform: ${job.platform}`);
            result = await this.advancedAutomation.applyToGenericJob(
              job.url,
              {
