@@ -1,5 +1,7 @@
 // Optimized AdvancedAutomationService
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
+import { User } from '../users/entities/user.entity';
 import { Page, chromium, Browser } from 'playwright';
 import { LlmService } from './llm.service';
 import * as path from 'path';
@@ -17,17 +19,19 @@ export interface FormField {
 }
 
 export interface AutomationContext {
-    userProfile: any;
+    userProfile: User;
     resumeText: string;
     resumePath?: string;
 }
 
 @Injectable()
 export class AdvancedAutomationService {
-    private readonly logger = new Logger(AdvancedAutomationService.name);
     private readonly screenshotDir = path.join(process.cwd(), 'screenshots');
 
-    constructor(private llmService: LlmService) {
+    constructor(
+        @InjectPinoLogger(AdvancedAutomationService.name) private readonly logger: PinoLogger,
+        private llmService: LlmService
+    ) {
         if (!fs.existsSync(this.screenshotDir)) {
             fs.mkdirSync(this.screenshotDir, { recursive: true });
         }
@@ -37,10 +41,10 @@ export class AdvancedAutomationService {
         jobUrl: string,
         context: AutomationContext
     ): Promise<{ success: boolean; message: string; screenshotUrl?: string }> {
-        this.logger.log(`🚀 Starting Advanced Automation for ${jobUrl}`);
+        this.logger.info(`🚀 Starting Advanced Automation for ${jobUrl}`);
         
         const browser: Browser = await chromium.launch({
-            headless: false, // Visible for debugging/demo
+            headless: process.env.NODE_ENV !== 'production', // Visible for debugging/demo in dev
             args: ['--start-maximized'],
         });
         
@@ -67,15 +71,19 @@ export class AdvancedAutomationService {
             return { ...result, screenshotUrl };
 
         } catch (error) {
-            this.logger.error(`Automation failed: ${error.message}`);
+            const msg = error instanceof Error ? error.message : String(error);
+            this.logger.error(`Automation failed: ${msg}`);
             // Take error screenshot
             try {
                 const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
                 const screenshotPath = path.join(this.screenshotDir, `error_${timestamp}.png`);
                 await page.screenshot({ path: screenshotPath });
-            } catch (e) {}
+            } catch (e) {
+                const eMsg = e instanceof Error ? e.message : String(e);
+                this.logger.warn(`Failed to take error screenshot: ${eMsg}`);
+            }
             
-            return { success: false, message: error.message };
+            return { success: false, message: msg };
         } finally {
             await browser.close();
         }
@@ -88,7 +96,7 @@ export class AdvancedAutomationService {
         page: Page,
         context: AutomationContext
     ): Promise<{ success: boolean; message: string }> {
-        this.logger.log('🚀 Starting Advanced Form Automation');
+        this.logger.info('🚀 Starting Advanced Form Automation');
         
         let steps = 0;
         const maxSteps = 15; // Prevent infinite loops
@@ -96,18 +104,18 @@ export class AdvancedAutomationService {
 
         while (steps < maxSteps) {
             steps++;
-            this.logger.log(`📌 Step ${steps}: Analyzing page state...`);
+            this.logger.info(`📌 Step ${steps}: Analyzing page state...`);
             
             // 1. Check for success/completion
             const pageContent = await page.content();
             if (this.detectSuccessParams(pageContent)) {
-                this.logger.log('✅ Application submitted successfully!');
+                this.logger.info('✅ Application submitted successfully!');
                 return { success: true, message: 'Application submitted successfully' };
             }
 
             // 2. Identify actionable form fields
             const fields = await this.extractFormFields(page);
-            this.logger.log(`Found ${fields.length} interactive fields`);
+            this.logger.info(`Found ${fields.length} interactive fields`);
 
             // 3. Filter out fields to process
             const fieldsToProcess = fields.filter(f => {
@@ -119,7 +127,7 @@ export class AdvancedAutomationService {
             });
 
             if (fieldsToProcess.length > 0) {
-                this.logger.log(`📝 Processing ${fieldsToProcess.length} fields...`);
+                this.logger.info(`📝 Processing ${fieldsToProcess.length} fields...`);
                 
                 // 4. Generate answers using LLM
                 const answers = await this.generateAnswersForFields(fieldsToProcess, context);
@@ -141,7 +149,7 @@ export class AdvancedAutomationService {
                     await page.waitForTimeout(1000);
                     const newFields = await this.extractFormFields(page);
                     if (newFields.length > fields.length) {
-                        this.logger.log('🔄 New fields detected after filling! Repeating analysis...');
+                        this.logger.info('🔄 New fields detected after filling! Repeating analysis...');
                         continue; // Loop back to analyze again
                     }
                 }
@@ -151,12 +159,12 @@ export class AdvancedAutomationService {
             const navigationResult = await this.handleNavigation(page);
             
             if (navigationResult === 'submitting') {
-                this.logger.log('📤 Submitting form...');
+                this.logger.info('📤 Submitting form...');
                 await page.waitForTimeout(5000); // Wait for submission
                 consecutiveNoAction = 0;
                 // Loop will check for success on next iteration
             } else if (navigationResult === 'next_page') {
-                this.logger.log('➡️ Moving to next page...');
+                this.logger.info('➡️ Moving to next page...');
                 await page.waitForTimeout(2000);
                 consecutiveNoAction = 0;
             } else if (navigationResult === 'no_action') {
@@ -276,7 +284,7 @@ export class AdvancedAutomationService {
             type: f.type
         }));
 
-        this.logger.log('🧠 Querying LLM for answers...');
+        this.logger.info('🧠 Querying LLM for answers...');
         return await this.llmService.answerApplicationQuestions(
             questions,
             context.userProfile,
@@ -336,7 +344,8 @@ export class AdvancedAutomationService {
                     break;
             }
         } catch (error) {
-            this.logger.warn(`Failed to fill field ${field.id}: ${error.message}`);
+            const msg = error instanceof Error ? error.message : String(error);
+            this.logger.warn(`Failed to fill field ${field.id}: ${msg}`);
         }
         return false;
     }
