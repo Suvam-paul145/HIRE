@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Query,
-  Delete,
+
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -110,22 +110,35 @@ export class ApplicationsController {
   async getAll(
     @Query('userId') userId?: string,
     @Query('status') status?: string,
-    @Query('limit') limitStr?: string,
-    @Query('offset') offsetStr?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ) {
-    const limit = Math.min(Math.max(parseInt(limitStr ?? '20', 10) || 20, 1), 100);
-    const offset = Math.max(parseInt(offsetStr ?? '0', 10) || 0, 0);
+    const parsedPage = parseInt(page as string, 10);
+    const parsedLimit = parseInt(limit as string, 10);
+
+    const pageNumber = isNaN(parsedPage) ? 1 : Math.max(1, parsedPage);
+    const limitNumber = isNaN(parsedLimit) ? 10 : Math.max(1, parsedLimit);
+    const validLimit = limitNumber > 100 ? 100 : limitNumber;
+
+    let result: { data: any[]; total: number } = { data: [], total: 0 };
 
     if (status && userId) {
-      return this.applicationsService.findByStatus(status as any, userId, limit, offset);
+      result = await this.applicationsService.findByStatus(status as any, userId, pageNumber, validLimit);
     } else if (status) {
-      return this.applicationsService.findByStatus(status as any, undefined, limit, offset);
+      result = await this.applicationsService.findByStatus(status as any, undefined, pageNumber, validLimit);
     } else if (userId) {
-      return this.applicationsService.findByUser(userId, limit, offset);
+      result = await this.applicationsService.findByUser(userId, pageNumber, validLimit);
     }
 
-    // Return empty paginated response if no filters
-    return { data: [], total: 0, limit, offset };
+    return {
+      data: result.data,
+      meta: {
+        total: result.total,
+        page: pageNumber,
+        limit: validLimit,
+        totalPages: Math.ceil(result.total / validLimit) || 0,
+      }
+    };
   }
 
   /**

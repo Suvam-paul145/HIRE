@@ -199,13 +199,31 @@ export class UsersController {
    * Get all users (paginated)
    */
   @Get()
-  async getAll(
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
-  ) {
-    const parsedLimit = Math.max(1, parseInt(limit ?? '20', 10) || 20);
-    const parsedOffset = Math.max(0, parseInt(offset ?? '0', 10) || 0);
-    return this.usersService.findAll(parsedLimit, parsedOffset);
+  async getAll(@Query('page') page?: string, @Query('limit') limit?: string) {
+    const parsedPage = parseInt(page as string, 10);
+    const parsedLimit = parseInt(limit as string, 10);
+
+    const pageNumber = isNaN(parsedPage) ? 1 : Math.max(1, parsedPage);
+    const limitNumber = isNaN(parsedLimit) ? 10 : Math.max(1, parsedLimit);
+
+    const validLimit = limitNumber > 100 ? 100 : limitNumber;
+
+    const { data, total } = await this.usersService.findAll(pageNumber, validLimit);
+
+    return {
+      data: data.map(user => ({
+        id: user.id,
+        email: user.email,
+        fullname: user.fullname,
+        skills: user.skills,
+      })),
+      meta: {
+        total,
+        page: pageNumber,
+        limit: validLimit,
+        totalPages: Math.ceil(total / validLimit),
+      }
+    };
   }
 
   /**
